@@ -1,39 +1,105 @@
-# 2fa.pub — 下一代纯前端零信任 2FA 工具站
+<div align="right">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.ja.md">日本語</a>
+</div>
 
-面向开发者、QA 测试人员、跨境电商/矩阵工作室及极客群体的零信任、全键盘流、高颜值纯本地 2FA 瑞士军刀。
+<div align="center">
 
-## 核心特性
+# 2fa.pub
 
-1. **首屏即用，全局 `Ctrl+V` 盲粘秒出码**：无需点击输入框，任意位置粘贴单密钥或二维码截图即刻计算并自动写回剪贴板。
-2. **`≤4s` 濒临过期智能顺延**：双周期并发计算，剩余 `≤4s` 自动激活珊瑚红脉冲并顺延复制下一周期验证码。
-3. **URL `#Hash` 隐私书签直出**：支持 `2fa.pub/#secret=...&label=...` 书签秒算，锚点参数不随 HTTP 请求发送、物理级不经过服务器。
-4. **Raycast 风格全键盘流**：`Ctrl+V` 盲粘、`Ctrl+C` 全局智能复制（支持划词自动放行与 ≤4s 顺延）、`/` 聚焦输入、`Alt+1~6` 切换工具、`Esc` 一键焚毁内存。
-5. **六大工具**：TOTP 计算器（含多行账密批量清洗）、Google Authenticator 迁移码提取、二维码生成器、Steam Guard 令牌、AES-256-GCM 加密保险箱、CLI 命令与安全审计。
+**A minimal, 100% local 2FA / TOTP code calculator — keys never leave your device.**
 
-## 安全模型（如实描述）
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Live site](https://img.shields.io/badge/Live-2fa.pub-10b981.svg)](https://2fa.pub/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-blue.svg)](https://github.com/yizheshen26-gif/2fa.pub/pulls)
 
-- **密钥零外发**：所有 TOTP/Steam/AES 运算 100% 使用浏览器原生 `crypto.subtle`，密钥只存在于内存与 localStorage，代码可在 F12 白盒加密核中逐行审计。
-- **统计与广告为固定配置**：GA4 (`G-LQ7821X2KZ`) 与 AdSense (`ca-pub-7685572758265529`) 硬编码在源码中，无后台修改入口。所有上报强制经过 `getSanitizedPageUrl()` 剥离 URL `#Hash` 锚点，密钥绝不进入上报内容。CSP（见 `_headers`）相应放行 Google Analytics / AdSense / Cloudflare Insights 域名——这是启用变现后的已知且最小化的外联白名单。
-- **域名锁硬拦截**：生产构建（`obfuscate_build.py`）内置 `_0xVerifyDomain` 校验，非授权镜像域名上业务脚本直接拒绝执行并显示提示。
-- **无管理后台**：站点不提供任何在线配置/管理功能，需要变更 ID 时直接改源码并重新构建。
+</div>
 
-## 构建
+> ⚠️ **Official deployment: [https://2fa.pub](https://2fa.pub/) only.** Any other site running modified versions of this code is not affiliated — never paste secrets into an instance you don't control. Self-hosting for yourself is fine and encouraged.
+
+## What is this?
+
+2fa.pub is a keyboard-driven, zero-trust 2FA toolkit that runs entirely in your browser.
+Paste a Base32 secret, an `otpauth://` link, or a QR screenshot — get a live TOTP code
+computed with the native Web Crypto API. There is **no backend**: nothing to upload to,
+nothing to leak to. Verify it yourself with the F12 network panel.
+
+## Tools
+
+| Tool | What it does |
+|---|---|
+| **TOTP Calculator** | RFC 6238 codes (SHA-1/256/512, 6/8 digits, custom periods), multi-line batch cleanup (`account----password----secret`, CSV, pipes) |
+| **Google Authenticator Export Decoder** | Decode `otpauth-migration://` export QR codes / links into Base32 secrets, fully offline |
+| **QR Generator** | Turn secrets back into scannable `otpauth://` QR codes |
+| **Steam Guard Calculator** | Steam mobile authenticator 5-character codes from `maFile` / shared secrets |
+| **Encrypted Vault** | AES-256-GCM local secret storage, protected by a master password |
+| **CLI & Audit** | oathtool / Python one-liners, live network audit proving zero key egress |
+
+## Keyboard workflow
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+V` (anywhere) | Paste a secret / QR screenshot → parsed instantly |
+| `Ctrl+C` (no selection) | Copy the live code; within ≤4 s of expiry it copies the next period's code (smart rollover) |
+| `Alt+1` … `Alt+6` | Switch between the six tools |
+| `/` | Focus the input box |
+| `Esc` | Burn memory — wipe everything from the page instantly |
+
+Optional: enable **"Advance to next row after copy"** in the account list to keep Ctrl+C
+walking down a batch of accounts, one code per press.
+
+URL hash bookmarks work too: `https://2fa.pub/#secret=JBSWY3DPEHPK3PXP&label=GitHub` —
+hash parameters are never sent to the server.
+
+## Security model
+
+- **100% local computation** — TOTP/Steam/AES all use the browser's native `crypto.subtle`.
+  Secrets exist only in page memory and (optionally) the encrypted vault's localStorage.
+- **White-box auditable crypto core** — the production build deliberately keeps the crypto
+  layer unminified so anyone can audit it via F12.
+- **Domain-locked production build** — the obfuscated business shell refuses to run on
+  unauthorized mirror domains.
+- **Analytics, minimized** — GA4 and AdSense IDs are hardcoded (there is no backend to
+  reconfigure them); all reporting strips URL hash anchors, so secrets never enter analytics.
+- The obfuscated production artifacts are reproducible from this repo via the build script —
+  what you see on 2fa.pub can be verified against what you build here.
+
+## Build
 
 ```bash
-python obfuscate_build.py            # index.html -> index.prod.html
-python obfuscate_build.py --zip      # 同时打包全站 zip
+# 1. Generate the static Tailwind CSS (only needed when utility classes change)
+npx tailwindcss@3.4.17 -i tailwind.input.css -o assets/tailwind.css --minify
+
+# 2. Build the obfuscated production HTML and the deployment zip
+python obfuscate_build.py --zip
 ```
 
-构建产物为双层结构：Layer 1 白盒可审计加密核（刻意不混淆）+ Layer 2 混淆业务壳（字符串池 XOR、标识符重命名、域名锁）。
+The build splits the code into two layers: a readable, white-box auditable crypto core, and
+an obfuscated business shell (string-pool XOR, identifier mangling, domain lock).
+`2fa-pub-deploy.zip` contains the ready-to-serve static site (`index.prod.html` is zipped as
+`index.html`, plus per-tool pre-rendered routes).
 
-## 部署（Cloudflare Pages）
+## Deploy (Cloudflare Pages)
 
-1. 将 `index.prod.html` 重命名为 `index.html` 作为线上入口（开发版源码不要直接上线）。
-2. `_headers`（CSP/安全头）、`_redirects`（`/google-extractor`、`/qr-generator`、`/steam`、`/cli` 的 SPA 重写，避免 sitemap 路由 404）、`ads.txt`（已配置真实发布商 ID）随站点根目录一起部署。
-3. `sw.js` 为导航请求 network-first（保证更新即时生效）、静态资源 cache-first，离线时回退缓存页面。
+The official site deploys via **direct upload**: create a Pages project, drag
+`2fa-pub-deploy.zip` into a new deployment, done. `_headers` (CSP), `_redirects`
+(clean-URL rewrites), `sw.js` (service worker: network-first navigations,
+stale-while-revalidate assets) and `ads.txt` are all included in the zip.
 
-## SEO
+## Guides
 
-- 完整 `<meta>` 关键词矩阵、Canonical、`hreflang`（zh-CN / en / x-default）、Open Graph 与 Twitter Card。
-- JSON-LD 结构化数据（`WebSite` + `WebApplication` + `FAQPage`）。
-- `sitemap.xml` 与 `robots.txt` 齐全；sitemap 中的子路由由 `_redirects` 重写到单页应用。
+Deep-dive articles, each available in 简体中文 / English / 日本語:
+
+- [Decoding Google Authenticator exports (otpauth-migration)](https://2fa.pub/guides/en/google-authenticator-export)
+- [Transferring Google Authenticator to a new phone](https://2fa.pub/guides/en/google-authenticator-transfer-new-phone)
+- [Lost 2FA secret recovery](https://2fa.pub/guides/en/lost-2fa-secret-recovery)
+
+## Contributing
+
+Issues and PRs are welcome — especially security reviews of the crypto core.
+Please don't open PRs that add server-side key transmission; that would defeat
+the entire point of the project.
+
+## License
+
+[MIT](LICENSE). Bundled third-party components (lucide, jsQR, qrcode-generator,
+Inter/JetBrains Mono fonts) keep their own licenses — see the notes in `LICENSE`.
