@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Authenticator エクスポートQRの解析：otpauth-migration からシークレットを抽出 - 2fa.pub</title>
+  <meta name="description" content="Google Authenticator のエクスポートQRコードの中身は？本ガイドではエクスポート手順、otpauth-migration:// リンクの protobuf 構造、そして 2fa.pub で Base32 シークレットをローカル抽出する方法を解説します。ブラウザ内で完結し、シークレットは送信されません。" />
+  <meta name="robots" content="index, follow, max-snippet:-1" />
+  <link rel="canonical" href="https://2fa.pub/guides/ja/google-authenticator-export" />
+  <link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-export" />
+  <link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-export" />
+  <link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-export" />
+  <link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-export" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:title" content="Google Authenticator エクスポートQRの解析：otpauth-migration からシークレットを抽出" />
+  <meta property="og:description" content="エクスポート手順、otpauth-migration:// の protobuf 構造、ローカルでの Base32 シークレット抽出方法を解説。アップロード一切なし。" />
+  <meta property="og:url" content="https://2fa.pub/guides/ja/google-authenticator-export" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google Authenticator エクスポートQRの解析：otpauth-migration からシークレットを抽出" />
+  <meta name="twitter:description" content="エクスポート手順、otpauth-migration:// の protobuf 構造、ローカルでの Base32 シークレット抽出方法を解説。アップロード一切なし。" />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "2fa.pub", "item": "https://2fa.pub/" },
+          { "@type": "ListItem", "position": 2, "name": "Google Authenticator エクスポート解析ガイド", "item": "https://2fa.pub/guides/ja/google-authenticator-export" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Google Authenticator のエクスポートQRコードは安全ですか？シークレットが漏れますか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "エクスポートQRには選択した全アカウントのシークレットが平文で含まれます。パスワード本体と同じ扱いをしてください。2fa.pub での解析はすべてブラウザ内で完結し、シークレットがサーバーに送信されることはありません。" }
+          },
+          {
+            "@type": "Question",
+            "name": "抽出した Base32 シークレットは他の認証アプリにインポートできますか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "はい。otpauth:// 標準に対応するアプリ（Aegis、2FAS、1Password など）なら、シークレット・発行者・アカウント名からエントリを再構築できます。2fa.pub のQR生成ツールで otpauth:// QRを作って読み込ませることも可能です。" }
+          },
+          {
+            "@type": "Question",
+            "name": "エクスポートリンクが otpauth-migration://offline?data= で始まるのはなぜ？",
+            "acceptedAnswer": { "@type": "Answer", "text": "data パラメータは Base64（URLセーフ）エンコードされた protobuf メッセージです。各 OtpParameters エントリにはシークレットバイト・アカウント名・発行者・アルゴリズム・桁数・タイプの 6 フィールドが含まれます。2fa.pub のデコーダはこの protobuf をブラウザ内で直接解析します。" }
+          },
+          {
+            "@type": "Question",
+            "name": "一部のアカウントがエクスポートできない場合は？",
+            "acceptedAnswer": { "@type": "Answer", "text": "一部の銀行や企業 SSO では Google Authenticator 側でエクスポートが無効化されています。該当エントリはエクスポートに含まれないため、プロバイダ自身の復旧フロー（バックアップコードや再登録）を利用してください。" }
+          },
+          {
+            "@type": "Question",
+            "name": "Steam のトークンも同じ方法で取り出せますか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "できません。Steam は独自の Steam Guard プロトコル（shared_secret、通常は maFile 形式）を使用し、Google の otpauth-migration エクスポートは使いません。2fa.pub の Steam 計算ツールは maFile や Base64 shared_secret の貼り付けに対応し、5 桁トークンを計算します。" }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <style>
+    body { background-color: #09090B; color: #E4E4E7; }
+    .article h2 { color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2rem 0 .75rem; }
+    .article p, .article li { line-height: 1.85; color: #C9C9CE; font-size: .95rem; }
+    .article ol, .article ul { padding-left: 1.25rem; margin: .75rem 0; }
+    .article ol { list-style: decimal; }
+    .article ul { list-style: disc; }
+    .article code { font-family: 'JetBrains Mono', Consolas, monospace; color: #6EE7B7; font-size: .85em; background: #18181B; padding: .1em .4em; border-radius: .35em; }
+    .article pre { background: #18181B; border: 1px solid #27272A; border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; color: #A7F3D0; margin: 1rem 0; }
+    .article table { width: 100%; font-size: .82rem; border-collapse: collapse; margin: 1rem 0; }
+    .article th, .article td { border: 1px solid #27272A; padding: .5rem .75rem; text-align: left; }
+    .article th { background: #18181B; color: #A1A1AA; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://2fa.pub/guides/ja/google-authenticator-export#article",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": "https://2fa.pub/guides/ja/google-authenticator-export"},
+    "headline": "Google Authenticator エクスポートQRの解析：otpauth-migration からシークレットを抽出",
+    "description": "Google Authenticator のエクスポート手順、otpauth-migration:// の protobuf 構造、ローカルでの Base32 シークレット抽出方法を解説します。",
+    "inLanguage": "ja",
+    "datePublished": "2026-11-05",
+    "dateModified": "2026-11-05",
+    "author": {"@type": "Organization", "name": "2fa.pub", "url": "https://2fa.pub/"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "2fa.pub",
+      "url": "https://2fa.pub/",
+      "logo": {"@type": "ImageObject", "url": "https://2fa.pub/assets/icon-512.png"}
+    },
+    "image": ["https://2fa.pub/assets/og-image.png"],
+    "isPartOf": {"@id": "https://2fa.pub/#website"}
+  }
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/30">
+
+  <header class="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <span class="text-zinc-950 font-bold text-sm">2F</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white" style="font-variant-numeric: tabular-nums;">2fa<span class="text-emerald-400">.pub</span></span>
+      </a>
+      <a href="/google-extractor" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-semibold">オンライン解析ツールを開く →</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+    <nav class="text-xs text-zinc-500 mb-6" aria-label="パンくず">
+      <a href="/" class="hover:text-emerald-400">2fa.pub</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-zinc-300">Google Authenticator エクスポート解析ガイド</span>
+    </nav>
+
+    <article class="article space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">Google Authenticator エクスポートQRの解析：otpauth-migration からシークレットを取り出す完全ガイド</h1>
+      <p class="text-sm text-zinc-500 mb-6">2026年11月更新 · 約6分で読めます</p>
+
+      <p>機種変更やバックアップ、Aegis・2FAS など柔軟なアプリへの移行のために、Google Authenticator の「アカウントのエクスポート」機能がQRコードを生成します。このQRには選択した全アカウントの<strong>シークレット一式</strong>が入っています——しかし Google 独自の <code>otpauth-migration://</code> protobuf 形式で包まれているため、普通のスキャナでは使えないリンクが表示されるだけです。</p>
+      <p>このガイドでは 3 つのことを解説します：正しいエクスポート手順、エクスポートデータの中身、そして <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub のオンライン解析ツール</a>でシークレットを漏らさず Base32 形式に変換する方法です。</p>
+
+      <h2>1. Google Authenticator からアカウントをエクスポートする</h2>
+      <ol>
+        <li>Google Authenticator を開く → 右上の<strong>⋮ → 設定</strong>（旧版は「アカウントの移行」）</li>
+        <li><strong>「アカウントをエクスポート」</strong>を選択</li>
+        <li>エクスポートするアカウントを選択（複数可）→ 次へ</li>
+        <li>QRコードが表示されます——これがエクスポートデータで、<strong>選択したアカウントの全シークレットを含みます</strong></li>
+      </ol>
+      <p>iOS と Android でメニューの位置は多少異なりますが、エクスポート形式は同一です。一部の銀行や企業 SSO はエクスポートを無効化しており、これらはデータに含まれません。</p>
+
+      <h2>2. エクスポートデータの中身</h2>
+      <p>任意のスキャナでこのQRを読むと、次のようなテキストが得られます：</p>
+      <pre>otpauth-migration://offline?data=CiUKIEkR4IknrfoK...（Base64URL エンコード）</pre>
+      <p><code>data</code> パラメータは <strong>Base64URL エンコードされた protobuf メッセージ</strong>です。デコードすると、各アカウントエントリ（OtpParameters）に 6 つのフィールドがあります：</p>
+      <table>
+        <tr><th>フィールド</th><th>意味</th><th>例</th></tr>
+        <tr><td>1</td><td>secret（鍵の生バイト）</td><td>16〜20 バイトのバイナリ</td></tr>
+        <tr><td>2</td><td>name（アカウント名）</td><td>alex@example.com</td></tr>
+        <tr><td>3</td><td>issuer（発行者）</td><td>GitHub</td></tr>
+        <tr><td>4</td><td>algorithm（列挙値）</td><td>1 = SHA1、2 = SHA256、3 = SHA512</td></tr>
+        <tr><td>5</td><td>digits（列挙値）</td><td>1 = 6桁、2 = 8桁</td></tr>
+        <tr><td>6</td><td>type（列挙値）</td><td>2 = TOTP、1 = HOTP</td></tr>
+      </table>
+      <p>secret バイトを標準 Base32（RFC 4648、A-Z2-7）でエンコードすると、どの認証アプリでもおなじみの鍵形式になります。例：<code>JBSWY3DPEHPK3PXP</code>。</p>
+
+      <h2>3. 2fa.pub でオンライン抽出（ローカル計算・送信ゼロ）</h2>
+      <ol>
+        <li><a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub の Google エクスポート解析ツール</a>を開く</li>
+        <li><code>otpauth-migration://offline?data=...</code> の文字列全体を貼り付けるか、<strong>エクスポートQRのスクリーンショットをアップロード</strong>（Ctrl+V での貼り付けにも対応）</li>
+        <li>表に各アカウントの発行者・アカウント名・Base32 シークレット・パラメータが即座に表示されます</li>
+        <li>「計算機へ送る」ですべてのコードをリアルタイム計算、または内蔵QR生成ツールで otpauth:// 形式のQRに戻して他のアプリに読み込ませることもできます</li>
+      </ol>
+      <p>デコードはすべてブラウザ内で完結します——2fa.pub は純フロントエンドツールで、シークレットを受け取るバックエンドは存在しません。ページ内のライブ監査機能で自分自身で検証できます。シークレットをスマホで読める otpauth:// 画像に変換するには <a href="/qr-generator" class="text-emerald-400 hover:underline">2FA QR生成ツール</a>を使ってください。</p>
+
+      <h2>4. よくある質問</h2>
+      <p><strong>エクスポートコードは安全ですか？</strong>エクスポートデータは全シークレットの平文そのもの——全パスワードを 1 枚の紙に書き出すのと同じです。スクリーンショットを共有したり、信頼できないオンラインツールで解析したりしないでください。2fa.pub はブラウザ内でローカル解析する点が、他のオンラインデコーダとの根本的な違いです。</p>
+      <p><strong>他の認証アプリにインポートできますか？</strong>はい。Base32 シークレットがあれば、otpauth:// 互換のアプリならどれでもエントリを再構築できます。</p>
+      <p><strong>Steam は？</strong>Steam は独自の Steam Guard プロトコル（shared_secret / maFile）を使い、Google のエクスポートは使いません。<a href="/steam" class="text-emerald-400 hover:underline">2fa.pub の Steam 計算ツール</a>は maFile の貼り付けに対応し、5 桁トークンを計算します。</p>
+
+      <div class="mt-10 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-sm text-zinc-200">エクスポートコードをお持ちですか？オンライン解析ツールを開いて貼り付けるだけ——すべてブラウザ内で完結します。</div>
+        <a href="/google-extractor" class="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-sm">今すぐ解析する →</a>
+      </div>
+    </article>
+
+    <div class="mt-10 pt-6 border-t border-zinc-900 text-xs text-zinc-500 flex flex-wrap gap-x-4 gap-y-2">
+      <a href="/" class="hover:text-emerald-400">← 2FA 計算ツールへ戻る</a>
+      <a href="/steam" class="hover:text-emerald-400">Steam トークン計算</a>
+      <a href="/qr-generator" class="hover:text-emerald-400">2FA QR生成</a>
+      <a href="/guides/en/google-authenticator-export" class="hover:text-emerald-400">English</a>
+      <a href="/guides/google-authenticator-export" class="hover:text-emerald-400">中文版</a>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900 text-[11px] text-zinc-600 flex items-center justify-between">
+    <span>2fa.pub — ゼロトラスト・クライアントサイド 2FA ツール</span>
+    <span>シークレット送信ゼロ</span>
+  </footer>
+</body>
+</html>

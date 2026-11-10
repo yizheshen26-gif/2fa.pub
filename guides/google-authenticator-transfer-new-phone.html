@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Authenticator 换手机迁移完整教程：旧手机数据转移到新手机 - 2fa.pub</title>
+  <meta name="description" content="换手机时 Google Authenticator 验证器怎么迁移？本教程覆盖官方导出导入、只有旧手机时的中转方案、两台手机都没有时的恢复路径，以及迁移后验证码不对的排查方法。" />
+  <meta name="robots" content="index, follow, max-snippet:-1" />
+  <link rel="canonical" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:title" content="Google Authenticator 换手机迁移完整教程：旧手机数据转移到新手机" />
+  <meta property="og:description" content="覆盖官方导出导入、只有旧手机时的中转方案、两台都没有时的恢复路径，以及迁移后验证码不对的排查方法。" />
+  <meta property="og:url" content="https://2fa.pub/guides/google-authenticator-transfer-new-phone" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google Authenticator 换手机迁移完整教程" />
+  <meta name="twitter:description" content="覆盖官方导出导入、只有旧手机时的中转方案、两台都没有时的恢复路径。" />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "2fa.pub", "item": "https://2fa.pub/" },
+          { "@type": "ListItem", "position": 2, "name": "Google Authenticator 换机迁移指南", "item": "https://2fa.pub/guides/google-authenticator-transfer-new-phone" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Google Authenticator 迁移到新手机后验证码不对怎么办？",
+            "acceptedAnswer": { "@type": "Answer", "text": "绝大多数是手机系统时间不准导致的。TOTP 基于 30 秒时间窗计算，进入手机系统设置把时间改为自动通过网络同步（或开启定位自动时区），验证码即可恢复正常。" }
+          },
+          {
+            "@type": "Question",
+            "name": "旧手机还在但无法登录 Google 账号，还能迁移吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "可以。只要旧手机上的 App 还能打开，就能通过「导出账户」生成本地二维码，用 2fa.pub 解析出 Base32 密钥后手动导入新手机，全程不需要登录任何 Google 账号。" }
+          },
+          {
+            "@type": "Question",
+            "name": "新旧手机都没有了，两步验证还能恢复吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "验证器本身无法凭空恢复——密钥只存在于设备上。恢复途径只剩三条：登录各服务商后台用绑定的备用码或短信重置两步验证、使用注册时保存的恢复邮箱、或提交服务商的人工申诉。" }
+          },
+          {
+            "@type": "Question",
+            "name": "开启云同步的 Google Authenticator 需要手动迁移吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "登录同一 Google 账号后验证码会自动同步到新设备，无需手动迁移。但云同步不覆盖未同步的本地账户，且部分用户出于安全考虑不开启云同步，手动导出仍是更通用的方式。" }
+          },
+          {
+            "@type": "Question",
+            "name": "迁移前应该先删旧手机上的数据吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "不要。先在新手机上确认每个账户都能正常出码，再处理旧手机。账户是成对存在的——两侧同时有效不会冲突，过早删除旧数据只会让回退余地变成零。" }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <style>
+    body { background-color: #09090B; color: #E4E4E7; }
+    .article h2 { color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2rem 0 .75rem; }
+    .article p, .article li { line-height: 1.85; color: #C9C9CE; font-size: .95rem; }
+    .article ol, .article ul { padding-left: 1.25rem; margin: .75rem 0; }
+    .article ol { list-style: decimal; }
+    .article ul { list-style: disc; }
+    .article code { font-family: 'JetBrains Mono', Consolas, monospace; color: #6EE7B7; font-size: .85em; background: #18181B; padding: .1em .4em; border-radius: .35em; }
+    .article pre { background: #18181B; border: 1px solid #27272A; border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; color: #A7F3D0; margin: 1rem 0; }
+    .article table { width: 100%; font-size: .82rem; border-collapse: collapse; margin: 1rem 0; }
+    .article th, .article td { border: 1px solid #27272A; padding: .5rem .75rem; text-align: left; }
+    .article th { background: #18181B; color: #A1A1AA; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://2fa.pub/guides/google-authenticator-transfer-new-phone#article",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": "https://2fa.pub/guides/google-authenticator-transfer-new-phone"},
+    "headline": "Google Authenticator 换手机迁移完整教程：旧手机数据转移到新手机",
+    "description": "覆盖官方导出导入、只有旧手机时的中转方案、两台都没有时的恢复路径，以及迁移后验证码不对的排查方法。",
+    "inLanguage": "zh-CN",
+    "datePublished": "2026-11-10",
+    "dateModified": "2026-11-10",
+    "author": {"@type": "Organization", "name": "2fa.pub", "url": "https://2fa.pub/"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "2fa.pub",
+      "url": "https://2fa.pub/",
+      "logo": {"@type": "ImageObject", "url": "https://2fa.pub/assets/icon-512.png"}
+    },
+    "image": ["https://2fa.pub/assets/og-image.png"],
+    "isPartOf": {"@id": "https://2fa.pub/#website"}
+  }
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/30">
+
+  <header class="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <span class="text-zinc-950 font-bold text-sm">2F</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white" style="font-variant-numeric: tabular-nums;">2fa<span class="text-emerald-400">.pub</span></span>
+      </a>
+      <a href="/" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-semibold">打开在线计算器 →</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+    <nav class="text-xs text-zinc-500 mb-6" aria-label="面包屑">
+      <a href="/" class="hover:text-emerald-400">2fa.pub</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-zinc-300">Google Authenticator 换机迁移指南</span>
+    </nav>
+
+    <article class="article space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">Google Authenticator 换手机迁移完整教程：把验证器安全搬到新手机</h1>
+      <p class="text-sm text-zinc-500 mb-6">更新于 2026-11 · 阅读约 7 分钟</p>
+
+      <p>换手机最怕的不是通讯录——通讯录会自动同步，而是 <strong>Google Authenticator 里那几十个两步验证账户</strong>。验证器不绑定账号云端（除非你开了云同步），数据只躺在旧手机本地，直接换机等于把所有账户的两步验证一起丢掉。这篇教程按你的实际情况分三条路线，从最顺到最糟逐条讲清。</p>
+
+      <h2>先判断你属于哪种情况</h2>
+      <table>
+        <tr><th>情况</th><th>判断标准</th><th>走哪条路线</th></tr>
+        <tr><td>新旧手机都在手</td><td>两台都能解锁、App 都能打开</td><td>路线一：官方导出导入</td></tr>
+        <tr><td>只剩旧手机</td><td>新手机已清空，旧手机 App 能打开</td><td>路线二：导出码中转</td></tr>
+        <tr><td>旧手机已丢失/损坏</td><td>旧设备无法开机或无法解锁</td><td>路线三：服务商逐个恢复</td></tr>
+      </table>
+
+      <h2>路线一：新旧手机都在手（官方导出导入）</h2>
+      <ol>
+        <li>旧手机打开 Google Authenticator → 右上角<strong>三个点 → 导出账户</strong></li>
+        <li>勾选要迁移的账户（可一次全选）→ <strong>下一步</strong>，生成二维码</li>
+        <li>新手机安装 Google Authenticator → 右上角三个点 → <strong>导入账户</strong></li>
+        <li>用新手机扫旧手机上的二维码 → 确认每个账户都在新手机上正常出码</li>
+        <li>确认无误后，再考虑是否删除旧手机上的数据</li>
+      </ol>
+      <p>注意官方导出一次最多约 10 个账户，账户多就分几批导。操作细节与导出码的结构，见我们的<a href="/guides/google-authenticator-export" class="text-emerald-400 hover:underline">导出码解析指南</a>。</p>
+
+      <h2>路线二：只剩旧手机（导出码中转）</h2>
+      <p>新手机不想继续用 Google Authenticator（想换 Aegis、2FAS 等支持加密备份的验证器），或者只需要把密钥"拎"出来时，走中转方案：</p>
+      <ol>
+        <li>旧手机按路线一生成导出二维码，<strong>截图保存</strong></li>
+        <li>在电脑浏览器打开 <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub 导出码解析工具</a>，上传截图或按 Ctrl+V 粘贴</li>
+        <li>解析出每个账户的发行方、账户名与 <code>Base32 密钥</code>——全程在浏览器本地完成，密钥不上传</li>
+        <li>新手机装好你选的验证器，逐个手动添加：粘贴密钥、填发行方与账户名即可；或用 <a href="/qr-generator" class="text-emerald-400 hover:underline">2FA 二维码生成器</a>把密钥转回 otpauth:// 二维码直接扫</li>
+      </ol>
+      <p>这条路的优势：不依赖任何账号体系，密钥格式通用，迁移后你在哪个验证器里都不再被绑定。</p>
+
+      <h2>路线三：旧手机已丢失（逐个找服务商）</h2>
+      <p>先说结论：<strong>验证器本身无法凭空恢复</strong>。TOTP 密钥只存在于设备本地，没有任何云端可以"找回"。能做的是逐个找服务商重置两步验证：</p>
+      <ul>
+        <li><strong>有备用码</strong>：注册两步验证时保存的一次性恢复码，每个可用一次，登录后立即重新绑定验证器</li>
+        <li><strong>有绑定手机/邮箱</strong>：多数服务商支持短信或邮件验证后重置两步验证</li>
+        <li><strong>都没有</strong>：走服务商的人工申诉（通常要求身份证明），周期几天到几周</li>
+      </ul>
+      <p>这也是为什么两步验证的标配是"验证器 + 备用码"双保险——<strong>备用码打印或离线保存一份，是唯一能在丢机后救急的东西</strong>。</p>
+
+      <h2>迁移后验证码不对？九成是时间问题</h2>
+      <p>TOTP 验证码由"密钥 + 当前时间"计算得出，30 秒一换。新手机时间不准（尤其是刚恢复备份或手动改过时区的设备），算出的码就与服务端对不上。进入系统设置，把<strong>日期和时间改为"自动设置"/通过网络同步</strong>，再试一次。iOS 用户还可以在 Google Authenticator 内的设置里做时间同步校准。</p>
+
+      <h2>迁移完之后：把备份做上</h2>
+      <ul>
+        <li>每个重要服务的<strong>备用码</strong>离线保存一份（打印或密码管理器）</li>
+        <li>用 <a href="/guides/google-authenticator-export" class="text-emerald-400 hover:underline">导出码解析</a>把全部密钥导出一份 Base32 清单，存入加密的 <a href="/vault" class="text-emerald-400 hover:underline">本地保险柜</a>或密码管理器</li>
+        <li>考虑换用支持加密备份的验证器（Aegis、2FAS），避免下次再手动迁移</li>
+      </ul>
+
+      <h2>常见问题</h2>
+      <p><strong>迁移后旧手机上的验证码还能用吗？</strong>能用。账户是成对存在的，两侧同时有效并不冲突。但安全角度建议：确认新手机一切正常后，删除旧手机上的账户数据（尤其是要卖掉或送人时，务必先删干净）。</p>
+      <p><strong>开了云同步还要手动导吗？</strong>新手机登录同一 Google 账号会自动拉取同步的账户。但云同步不覆盖本地账户，且部分用户不信任云同步——手动导出是更通用、更可控的方式。</p>
+      <p><strong>微信、银行 App 的验证器也能这么迁吗？</strong>凡是标准 TOTP（扫码添加的那种）都适用。少数银行与企业 SSO 禁用了导出，这类账户只能走服务商自己的重新绑定流程。</p>
+      <p><strong>iPhone 换 Android（或反向）有区别吗？</strong>导出码格式完全相同，跨平台迁移没有障碍。用路线二的中转方案最稳妥。</p>
+
+      <div class="mt-10 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-sm text-zinc-200">手上有导出码或密钥？用 2fa.pub 在线解析与生成二维码，全程本地计算、密钥零外发。</div>
+        <a href="/google-extractor" class="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-sm">打开解析工具 →</a>
+      </div>
+    </article>
+
+    <div class="mt-10 pt-6 border-t border-zinc-900 text-xs text-zinc-500 flex flex-wrap gap-x-4 gap-y-2">
+      <a href="/" class="hover:text-emerald-400">← 返回 2FA 计算器</a>
+      <a href="/google-extractor" class="hover:text-emerald-400">导出码解析工具</a>
+      <a href="/qr-generator" class="hover:text-emerald-400">2FA 二维码生成器</a>
+      <a href="/guides/lost-2fa-secret-recovery" class="hover:text-emerald-400">密钥丢失恢复指南</a>
+      <a href="/guides/en/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">English</a>
+      <a href="/guides/ja/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">日本語</a>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900 text-[11px] text-zinc-600 flex items-center justify-between">
+    <span>2fa.pub — 纯本地 2FA 工具站</span>
+    <span>密钥零外发</span>
+  </footer>
+</body>
+</html>

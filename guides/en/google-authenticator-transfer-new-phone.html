@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Transfer Google Authenticator to a New Phone (3 Routes) - 2fa.pub</title>
+  <meta name="description" content="Moving to a new phone? Learn the official Google Authenticator export/import flow, a route for when only the old phone works, what to do when both are gone, and why codes break after transfer." />
+  <meta name="robots" content="index, follow, max-snippet:-1" />
+  <link rel="canonical" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:title" content="How to Transfer Google Authenticator to a New Phone (3 Routes)" />
+  <meta property="og:description" content="The official export/import flow, a route for when only the old phone works, what to do when both are gone, and why codes break after transfer." />
+  <meta property="og:url" content="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How to Transfer Google Authenticator to a New Phone (3 Routes)" />
+  <meta name="twitter:description" content="Official export/import, transfer with only the old phone, recovery when both are gone." />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "2fa.pub", "item": "https://2fa.pub/" },
+          { "@type": "ListItem", "position": 2, "name": "Transferring Google Authenticator to a New Phone", "item": "https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Why are my codes wrong after transferring Google Authenticator?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Almost always a device clock issue. TOTP codes are computed from the secret plus a 30-second time window. Set the phone's date and time to automatic network sync (and enable automatic time zone) and the codes will match again." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I still migrate if I can't sign into my Google account on the old phone?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. As long as the app still opens on the old phone, use Export Accounts to generate a local QR code, decode it with 2fa.pub into Base32 secrets, and add them manually on the new phone — no Google account login required anywhere." }
+          },
+          {
+            "@type": "Question",
+            "name": "Both phones are gone. Can two-factor authentication be recovered?",
+            "acceptedAnswer": { "@type": "Answer", "text": "The authenticator itself cannot be conjured back — the secret existed only on the device. Your remaining options: use saved backup codes, reset 2FA via each service's bound phone/email, or file a manual recovery request with the provider." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does cloud sync in Google Authenticator remove the need to migrate manually?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Signing into the same Google account on the new device pulls synced codes automatically. However, cloud sync may not cover all local accounts, and many users deliberately keep sync off, so manual export remains the universal method." }
+          },
+          {
+            "@type": "Question",
+            "name": "Should I delete the accounts on my old phone right after migrating?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Not immediately. Confirm every account generates valid codes on the new phone first. Both sides can coexist without conflict; deleting old data early leaves you no fallback — and always wipe it before selling or giving the phone away." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <style>
+    body { background-color: #09090B; color: #E4E4E7; }
+    .article h2 { color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2rem 0 .75rem; }
+    .article p, .article li { line-height: 1.85; color: #C9C9CE; font-size: .95rem; }
+    .article ol, .article ul { padding-left: 1.25rem; margin: .75rem 0; }
+    .article ol { list-style: decimal; }
+    .article ul { list-style: disc; }
+    .article code { font-family: 'JetBrains Mono', Consolas, monospace; color: #6EE7B7; font-size: .85em; background: #18181B; padding: .1em .4em; border-radius: .35em; }
+    .article pre { background: #18181B; border: 1px solid #27272A; border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; color: #A7F3D0; margin: 1rem 0; }
+    .article table { width: 100%; font-size: .82rem; border-collapse: collapse; margin: 1rem 0; }
+    .article th, .article td { border: 1px solid #27272A; padding: .5rem .75rem; text-align: left; }
+    .article th { background: #18181B; color: #A1A1AA; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://2fa.pub/guides/en/google-authenticator-transfer-new-phone#article",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": "https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"},
+    "headline": "How to Transfer Google Authenticator to a New Phone (3 Routes)",
+    "description": "The official export/import flow, a route for when only the old phone works, what to do when both are gone, and why codes break after transfer.",
+    "inLanguage": "en",
+    "datePublished": "2026-11-10",
+    "dateModified": "2026-11-10",
+    "author": {"@type": "Organization", "name": "2fa.pub", "url": "https://2fa.pub/"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "2fa.pub",
+      "url": "https://2fa.pub/",
+      "logo": {"@type": "ImageObject", "url": "https://2fa.pub/assets/icon-512.png"}
+    },
+    "image": ["https://2fa.pub/assets/og-image.png"],
+    "isPartOf": {"@id": "https://2fa.pub/#website"}
+  }
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/30">
+
+  <header class="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <span class="text-zinc-950 font-bold text-sm">2F</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white" style="font-variant-numeric: tabular-nums;">2fa<span class="text-emerald-400">.pub</span></span>
+      </a>
+      <a href="/" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-semibold">Open the calculator →</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+    <nav class="text-xs text-zinc-500 mb-6" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-emerald-400">2fa.pub</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-zinc-300">Transferring Google Authenticator</span>
+    </nav>
+
+    <article class="article space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">How to Transfer Google Authenticator to a New Phone — Without Locking Yourself Out</h1>
+      <p class="text-sm text-zinc-500 mb-6">Updated 2026-11 · 7 min read</p>
+
+      <p>Contacts sync themselves; your <strong>two-factor accounts do not</strong>. Unless you enabled cloud sync, every TOTP secret inside Google Authenticator lives only on the old phone — a naive "just switch phones" leaves all of your 2FA behind. This guide gives you three routes, ordered from best to worst case.</p>
+
+      <h2>Step 0: Identify your situation</h2>
+      <table>
+        <tr><th>Situation</th><th>Test</th><th>Route</th></tr>
+        <tr><td>Both phones in hand</td><td>Both unlock, the app opens on both</td><td>Route 1: official export/import</td></tr>
+        <tr><td>Only the old phone works</td><td>New phone is fresh; old app opens</td><td>Route 2: export-code relay</td></tr>
+        <tr><td>Old phone lost or dead</td><td>Old device won't unlock or power on</td><td>Route 3: per-service recovery</td></tr>
+      </table>
+
+      <h2>Route 1: Both phones in hand (official export/import)</h2>
+      <ol>
+        <li>On the old phone: Google Authenticator → <strong>⋮ menu → Export accounts</strong></li>
+        <li>Select the accounts (multi-select supported) → <strong>Next</strong> — a QR code appears</li>
+        <li>On the new phone: install Google Authenticator → <strong>⋮ menu → Import accounts</strong></li>
+        <li>Scan the QR with the new phone → verify every account produces codes</li>
+        <li>Only after verification, decide whether to remove data from the old phone</li>
+      </ol>
+      <p>The official exporter handles roughly 10 accounts per batch — export in several passes if needed. What the export code actually contains is covered in our <a href="/guides/en/google-authenticator-export" class="text-emerald-400 hover:underline">otpauth-migration export decoding guide</a>.</p>
+
+      <h2>Route 2: Only the old phone works (export-code relay)</h2>
+      <p>Use this when the new phone will run a different authenticator (Aegis, 2FAS, 1Password…) or you simply want the keys out in a portable format:</p>
+      <ol>
+        <li>Generate the export QR on the old phone (as above) and <strong>take a screenshot</strong></li>
+        <li>Open the <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub export decoder</a> on any computer, upload the screenshot or press Ctrl+V to paste it</li>
+        <li>Read out each account's issuer, name, and <code>Base32 secret</code> — decoded locally in your browser, nothing uploaded</li>
+        <li>On the new phone, add entries manually in your chosen app, or convert secrets back to scannable otpauth:// codes with the <a href="/qr-generator" class="text-emerald-400 hover:underline">2FA QR generator</a></li>
+      </ol>
+      <p>The advantage: no account system involved, a universal key format, and no vendor lock-in after the move.</p>
+
+      <h2>Route 3: The old phone is gone (per-service recovery)</h2>
+      <p>Hard truth first: <strong>the authenticator cannot be recovered from the cloud</strong> — TOTP secrets existed only on the device. What you can do is reset 2FA service by service:</p>
+      <ul>
+        <li><strong>Backup codes</strong>: the one-time recovery codes saved at 2FA enrollment — each works once; log in and re-enroll immediately</li>
+        <li><strong>Bound phone/email</strong>: most services let you reset 2FA after SMS or email verification</li>
+        <li><strong>Neither</strong>: file a manual recovery request with the provider (usually requires identity proof; days to weeks)</li>
+      </ul>
+      <p>This is why "authenticator + backup codes" is the standard pairing — <strong>offline backup codes are the only thing that saves you after a lost phone</strong>.</p>
+
+      <h2>Codes wrong after the move? It's the clock, 9 times out of 10</h2>
+      <p>TOTP = secret + current time, in 30-second windows. A new phone with a drifted clock (common right after a backup restore or a manual timezone change) computes codes the server rejects. Set <strong>date &amp; time to automatic / network-provided</strong> and retry. On iOS you can also run the time-sync correction inside Google Authenticator's settings.</p>
+
+      <h2>After migrating: build the backup you wish you had</h2>
+      <ul>
+        <li>Save <strong>backup codes</strong> for every important service, offline (printed or in a password manager)</li>
+        <li>Export all secrets as a Base32 list via the <a href="/guides/en/google-authenticator-export" class="text-emerald-400 hover:underline">export decoder</a> and store it in an encrypted vault or password manager</li>
+        <li>Consider switching to an authenticator with encrypted backups (Aegis, 2FAS) so the next move is a restore, not a migration</li>
+      </ul>
+
+      <h2>FAQ</h2>
+      <p><strong>Do the codes on the old phone keep working after migration?</strong> Yes — accounts exist on both sides independently and that causes no conflict. Still, once the new phone checks out, delete the data on the old one, especially before selling or giving it away.</p>
+      <p><strong>I use cloud sync — anything to do?</strong> Signing into the same Google account on the new device pulls the synced accounts automatically. Manual export remains the more complete and more private route.</p>
+      <p><strong>Does this work for banking apps too?</strong> Everything that uses standard TOTP (scan-a-QR enrollment) transfers the same way. Some banks and enterprise SSO providers disable exporting — those accounts must be re-enrolled through the provider's own flow.</p>
+      <p><strong>iPhone to Android (or back)?</strong> The export format is identical; cross-platform moves are fine. Route 2 is the most reliable for that.</p>
+
+      <div class="mt-10 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-sm text-zinc-200">Got an export code or a secret? Decode and regenerate QR codes with 2fa.pub — fully local, keys never leave your device.</div>
+        <a href="/google-extractor" class="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-sm">Open the decoder →</a>
+      </div>
+    </article>
+
+    <div class="mt-10 pt-6 border-t border-zinc-900 text-xs text-zinc-500 flex flex-wrap gap-x-4 gap-y-2">
+      <a href="/" class="hover:text-emerald-400">← Back to the 2FA calculator</a>
+      <a href="/google-extractor" class="hover:text-emerald-400">Export code decoder</a>
+      <a href="/qr-generator" class="hover:text-emerald-400">2FA QR generator</a>
+      <a href="/guides/lost-2fa-secret-recovery" class="hover:text-emerald-400">Lost 2FA secret recovery</a>
+      <a href="/guides/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">中文</a>
+      <a href="/guides/ja/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">日本語</a>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900 text-[11px] text-zinc-600 flex items-center justify-between">
+    <span>2fa.pub — 100% local 2FA toolkit</span>
+    <span>Keys never leave your device</span>
+  </footer>
+</body>
+</html>

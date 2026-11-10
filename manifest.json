@@ -1,0 +1,13 @@
+{
+  "name": "2fa.pub - Zero-Trust Client-Side 2FA Utility",
+  "short_name": "2fa.pub",
+  "description": "100% Client-Side Web Crypto 2FA/TOTP Calculator, Batch Cleaner, QR Scanner & Google Authenticator Migration Extractor.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#09090B",
+  "theme_color": "#10B981",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

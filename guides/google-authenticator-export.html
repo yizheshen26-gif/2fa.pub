@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Authenticator 导出码解析：提取 otpauth-migration 密钥完整指南 - 2fa.pub</title>
+  <meta name="description" content="Google Authenticator 导出的二维码里是什么？本指南讲解导出步骤、otpauth-migration:// 链接的 protobuf 结构，以及如何用 2fa.pub 在线提取 Base32 密钥——全程本地计算，密钥零外发。" />
+  <meta name="robots" content="index, follow, max-snippet:-1" />
+  <link rel="canonical" href="https://2fa.pub/guides/google-authenticator-export" />
+  <link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-export" />
+  <link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-export" />
+  <link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-export" />
+  <link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-export" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:title" content="Google Authenticator 导出码解析：提取 otpauth-migration 密钥完整指南" />
+  <meta property="og:description" content="讲解 Google Authenticator 导出步骤、otpauth-migration:// 的 protobuf 结构，以及如何本地提取 Base32 密钥。" />
+  <meta property="og:url" content="https://2fa.pub/guides/google-authenticator-export" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google Authenticator 导出码解析：提取 otpauth-migration 密钥完整指南" />
+  <meta name="twitter:description" content="讲解 Google Authenticator 导出步骤、otpauth-migration:// 的 protobuf 结构，以及如何本地提取 Base32 密钥。" />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "2fa.pub", "item": "https://2fa.pub/" },
+          { "@type": "ListItem", "position": 2, "name": "Google Authenticator 导出码解析指南", "item": "https://2fa.pub/guides/google-authenticator-export" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "导出 Google Authenticator 二维码安全吗？会泄露密钥吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "导出码本身包含全部账户密钥的明文编码，等同于密码本身，务必不要截图发给别人。使用 2fa.pub 解析时，全部解码在浏览器本地完成，密钥不上传任何服务器。" }
+          },
+          {
+            "@type": "Question",
+            "name": "提取出的 Base32 密钥能导入其他验证器吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "可以。任何支持 otpauth:// 标准的验证器（如 Aegis、2FAS、1Password）都能用该密钥 + issuer + 账户名重建条目，或直接扫描 2fa.pub 二维码生成器生成的 otpauth:// 二维码。" }
+          },
+          {
+            "@type": "Question",
+            "name": "为什么导出码里的链接以 otpauth-migration://offline?data= 开头？",
+            "acceptedAnswer": { "@type": "Answer", "text": "data 参数是 Base64（URL 变体）编码的 protobuf 消息，每个条目包含 secret 字节、账户名、发行方、算法、位数与类型六个字段。2fa.pub 的解析器直接在浏览器里解码该 protobuf。" }
+          },
+          {
+            "@type": "Question",
+            "name": "导出时提示无法导出某些账户怎么办？",
+            "acceptedAnswer": { "@type": "Answer", "text": "部分服务商（如部分银行、企业 SSO）在 Google Authenticator 中禁用了导出。这类条目不会出现在导出码中，需要用服务商自己的恢复流程（备用码或重新绑定）。" }
+          },
+          {
+            "@type": "Question",
+            "name": "Steam 令牌也能这样导出吗？",
+            "acceptedAnswer": { "@type": "Answer", "text": "Steam 使用自己的 Steam Guard 协议（shared_secret，通常是 maFile 格式），不走 Google 的 otpauth-migration 导出。2fa.pub 的 Steam 标签页支持直接粘贴 maFile 或 Base64 shared_secret 计算 5 位令牌。" }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <style>
+    body { background-color: #09090B; color: #E4E4E7; }
+    .article h2 { color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2rem 0 .75rem; }
+    .article p, .article li { line-height: 1.85; color: #C9C9CE; font-size: .95rem; }
+    .article ol, .article ul { padding-left: 1.25rem; margin: .75rem 0; }
+    .article ol { list-style: decimal; }
+    .article ul { list-style: disc; }
+    .article code { font-family: 'JetBrains Mono', Consolas, monospace; color: #6EE7B7; font-size: .85em; background: #18181B; padding: .1em .4em; border-radius: .35em; }
+    .article pre { background: #18181B; border: 1px solid #27272A; border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; color: #A7F3D0; margin: 1rem 0; }
+    .article table { width: 100%; font-size: .82rem; border-collapse: collapse; margin: 1rem 0; }
+    .article th, .article td { border: 1px solid #27272A; padding: .5rem .75rem; text-align: left; }
+    .article th { background: #18181B; color: #A1A1AA; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://2fa.pub/guides/google-authenticator-export#article",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": "https://2fa.pub/guides/google-authenticator-export"},
+    "headline": "Google Authenticator 导出码解析：提取 otpauth-migration 密钥完整指南",
+    "description": "讲解 Google Authenticator 导出步骤、otpauth-migration:// 的 protobuf 结构，以及如何本地提取 Base32 密钥。",
+    "inLanguage": "zh-CN",
+    "datePublished": "2026-11-05",
+    "dateModified": "2026-11-05",
+    "author": {"@type": "Organization", "name": "2fa.pub", "url": "https://2fa.pub/"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "2fa.pub",
+      "url": "https://2fa.pub/",
+      "logo": {"@type": "ImageObject", "url": "https://2fa.pub/assets/icon-512.png"}
+    },
+    "image": ["https://2fa.pub/assets/og-image.png"],
+    "isPartOf": {"@id": "https://2fa.pub/#website"}
+  }
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/30">
+
+  <header class="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <span class="text-zinc-950 font-bold text-sm">2F</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white" style="font-variant-numeric: tabular-nums;">2fa<span class="text-emerald-400">.pub</span></span>
+      </a>
+      <a href="/google-extractor" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-semibold">打开在线解析工具 →</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+    <nav class="text-xs text-zinc-500 mb-6" aria-label="面包屑">
+      <a href="/" class="hover:text-emerald-400">2fa.pub</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-zinc-300">Google Authenticator 导出码解析指南</span>
+    </nav>
+
+    <article class="article space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">Google Authenticator 导出码解析：从 otpauth-migration 提取密钥的完整指南</h1>
+      <p class="text-sm text-zinc-500 mb-6">更新于 2026-11 · 阅读约 6 分钟</p>
+
+      <p>换手机、做备份，或者想把验证器从 Google Authenticator 迁移到 Aegis、2FAS 这类更灵活的应用时，Google 提供的「导出账户」功能会生成一个二维码。这个二维码里装着你所有账户的<strong>完整密钥</strong>——但它是 Google 私有的 <code>otpauth-migration://</code> protobuf 格式，普通扫码工具扫出来的只是一串无法直接使用的链接。</p>
+      <p>这篇指南讲清楚三件事：怎么正确导出、导出码里到底是什么结构、以及如何用 <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub 的在线解析工具</a>在不泄露密钥的前提下把它变成可用的 Base32 密钥。</p>
+
+      <h2>一、在 Google Authenticator 中导出账户</h2>
+      <ol>
+        <li>打开 Google Authenticator → 右上角<strong>三个点 → 设置</strong>（旧版本为「转移账户」）</li>
+        <li>选择<strong>「导出账户」</strong></li>
+        <li>勾选要导出的账户（可多选）→ 下一步</li>
+        <li>App 生成一个二维码——这就是导出码，<strong>包含所选账户的全部密钥</strong></li>
+      </ol>
+      <p>注意：iOS 与 Android 的入口略有差异，但生成的导出格式完全相同。部分银行与企业 SSO 账户被服务商禁用导出，不会出现在导出码里。</p>
+
+      <h2>二、导出码里到底是什么？</h2>
+      <p>用任意扫码器扫这个二维码，得到的文本形如：</p>
+      <pre>otpauth-migration://offline?data=CiUKIEkR4IknrfoK...（Base64URL 编码）</pre>
+      <p><code>data</code> 参数是一段 <strong>Base64URL 编码的 protobuf 消息</strong>，解码后每个账户条目（OtpParameters）包含六个字段：</p>
+      <table>
+        <tr><th>字段号</th><th>含义</th><th>示例</th></tr>
+        <tr><td>1</td><td>secret（密钥原始字节）</td><td>二进制 16-20 字节</td></tr>
+        <tr><td>2</td><td>name（账户名）</td><td>alex@example.com</td></tr>
+        <tr><td>3</td><td>issuer（发行方）</td><td>GitHub</td></tr>
+        <tr><td>4</td><td>algorithm（算法枚举）</td><td>1 = SHA1，2 = SHA256，3 = SHA512</td></tr>
+        <tr><td>5</td><td>digits（位数枚举）</td><td>1 = 6 位，2 = 8 位</td></tr>
+        <tr><td>6</td><td>type（类型枚举）</td><td>2 = TOTP，1 = HOTP</td></tr>
+      </table>
+      <p>把 secret 字节做标准 Base32 编码（RFC 4648，字母表 A-Z2-7），就是我们在其他验证器里熟悉的密钥形式，例如 <code>JBSWY3DPEHPK3PXP</code>。</p>
+
+      <h2>三、用 2fa.pub 在线提取（本地计算，密钥零外发）</h2>
+      <ol>
+        <li>打开 <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub 的 Google 导出码解析工具</a></li>
+        <li>把 <code>otpauth-migration://offline?data=...</code> 整串粘贴进输入框，<strong>或直接上传导出二维码截图</strong>（Ctrl+V 粘贴截图也行）</li>
+        <li>表格立即列出每个账户的发行方、账户名、Base32 密钥与算法参数</li>
+        <li>点「发送到主计算器」即可实时算出全部验证码，或用内置二维码生成器把密钥转回标准 otpauth:// 二维码供其他 App 扫描</li>
+      </ol>
+      <p>整个解码过程在你的浏览器里完成——2fa.pub 是纯前端工具，没有后端接口接收密钥，页面的实时网络审计功能可以直接验证这一点。你也可以用我们生成的 <a href="/qr-generator" class="text-emerald-400 hover:underline">2FA 二维码生成器</a>把密钥转成手机可扫的 otpauth:// 图。</p>
+
+      <h2>四、常见问题</h2>
+      <p><strong>导出码安全吗？</strong>导出码 = 全部密钥的明文，等同于把所有密码写在一张纸上。不要截图发群里、不要用不可信的在线工具解析。2fa.pub 的解析全部在浏览器本地进行，这也是它与其他在线解析工具的根本区别。</p>
+      <p><strong>能导入其他验证器吗？</strong>能。拿到 Base32 密钥后，任何支持 otpauth:// 标准的验证器都可以重建条目。</p>
+      <p><strong>Steam 呢？</strong>Steam 用自己的 Steam Guard 协议（shared_secret / maFile），不走这套导出。<a href="/steam" class="text-emerald-400 hover:underline">2fa.pub 的 Steam 计算器</a>支持直接粘贴 maFile 计算 5 位令牌。</p>
+
+      <div class="mt-10 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-sm text-zinc-200">准备好导出码了？打开在线解析工具，粘贴即可提取密钥——全程本地计算。</div>
+        <a href="/google-extractor" class="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-sm">立即在线解析 →</a>
+      </div>
+    </article>
+
+    <div class="mt-10 pt-6 border-t border-zinc-900 text-xs text-zinc-500 flex flex-wrap gap-x-4 gap-y-2">
+      <a href="/" class="hover:text-emerald-400">← 返回 2FA 计算器</a>
+      <a href="/steam" class="hover:text-emerald-400">Steam 令牌计算器</a>
+      <a href="/qr-generator" class="hover:text-emerald-400">2FA 二维码生成器</a>
+      <a href="/guides/en/google-authenticator-export" class="hover:text-emerald-400">English</a>
+      <a href="/guides/ja/google-authenticator-export" class="hover:text-emerald-400">日本語</a>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900 text-[11px] text-zinc-600 flex items-center justify-between">
+    <span>2fa.pub — 纯本地 2FA 工具站</span>
+    <span>密钥零外发</span>
+  </footer>
+</body>
+</html>

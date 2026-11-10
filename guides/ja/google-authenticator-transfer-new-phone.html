@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Authenticator の機種変更・移行ガイド：旧スマホから新スマホへ完全移行 - 2fa.pub</title>
+  <meta name="description" content="機種変更時の Google Authenticator 移行手順を完全解説。公式のエクスポート／インポート、旧スマホしか使えない場合の中継方法、両方失った場合の復旧、移行後にコードが合わない原因と対処法。" />
+  <meta name="robots" content="index, follow, max-snippet:-1" />
+  <link rel="canonical" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" />
+  <link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:title" content="Google Authenticator の機種変更・移行ガイド：旧スマホから新スマホへ完全移行" />
+  <meta property="og:description" content="公式のエクスポート／インポート、旧スマホしか使えない場合の中継方法、両方失った場合の復旧、移行後にコードが合わない原因と対処法。" />
+  <meta property="og:url" content="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Google Authenticator の機種変更・移行ガイド" />
+  <meta name="twitter:description" content="公式エクスポート、旧スマホだけの中継方法、両方失った場合の復旧まで。" />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "2fa.pub", "item": "https://2fa.pub/" },
+          { "@type": "ListItem", "position": 2, "name": "Google Authenticator 機種変更ガイド", "item": "https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "機種変更後に Google Authenticator のコードが合わない原因是？",
+            "acceptedAnswer": { "@type": "Answer", "text": "ほとんどは端末の時計のずれです。TOTP はシークレットと 30 秒の時間窓から計算されるため、日付と時刻を「自動設定／ネットワーク提供」に変更すれば一致します。" }
+          },
+          {
+            "@type": "Question",
+            "name": "旧スマホで Google アカウントにログインできなくても移行できますか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "できます。アプリが開ける限り「アカウントのエクスポート」でローカル QR を生成し、2fa.pub で Base32 シークレットを抽出して新端末に手動登録できます。Google アカウントへのログインは一切不要です。" }
+          },
+          {
+            "@type": "Question",
+            "name": "新旧両方のスマホを失った場合、二段階認証は復旧できますか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "認証アプリ自体は復元できません。シークレットは端末ローカルにのみ存在するためです。バックアップコードの使用、各サービスの紐付け電話／メールでのリセット、手動での復旧申請が残された道です。" }
+          },
+          {
+            "@type": "Question",
+            "name": "クラウド同期を有効にしていれば手動移行は不要ですか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "同じ Google アカウントでログインすれば同期されたアカウントは自動的に反映されます。ただし同期対象外のローカルアカウントもあるため、手動エクスポートが最も確実で汎用的な方法です。" }
+          },
+          {
+            "@type": "Question",
+            "name": "移行後すぐに旧スマホのデータを削除すべきですか？",
+            "acceptedAnswer": { "@type": "Answer", "text": "いえ、まだです。新端末で全アカウントのコードが正しく出ることを確認してからにしてください。両側に同じアカウントがあっても競合しません。売却や譲渡の前には必ず削除を。" }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <style>
+    body { background-color: #09090B; color: #E4E4E7; }
+    .article h2 { color: #fff; font-weight: 700; font-size: 1.15rem; margin: 2rem 0 .75rem; }
+    .article p, .article li { line-height: 1.85; color: #C9C9CE; font-size: .95rem; }
+    .article ol, .article ul { padding-left: 1.25rem; margin: .75rem 0; }
+    .article ol { list-style: decimal; }
+    .article ul { list-style: disc; }
+    .article code { font-family: 'JetBrains Mono', Consolas, monospace; color: #6EE7B7; font-size: .85em; background: #18181B; padding: .1em .4em; border-radius: .35em; }
+    .article pre { background: #18181B; border: 1px solid #27272A; border-radius: .75rem; padding: 1rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; color: #A7F3D0; margin: 1rem 0; }
+    .article table { width: 100%; font-size: .82rem; border-collapse: collapse; margin: 1rem 0; }
+    .article th, .article td { border: 1px solid #27272A; padding: .5rem .75rem; text-align: left; }
+    .article th { background: #18181B; color: #A1A1AA; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone#article",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": "https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone"},
+    "headline": "Google Authenticator の機種変更・移行ガイド：旧スマホから新スマホへ完全移行",
+    "description": "公式のエクスポート／インポート、旧スマホしか使えない場合の中継方法、両方失った場合の復旧、移行後にコードが合わない原因と対処法。",
+    "inLanguage": "ja",
+    "datePublished": "2026-11-10",
+    "dateModified": "2026-11-10",
+    "author": {"@type": "Organization", "name": "2fa.pub", "url": "https://2fa.pub/"},
+    "publisher": {
+      "@type": "Organization",
+      "name": "2fa.pub",
+      "url": "https://2fa.pub/",
+      "logo": {"@type": "ImageObject", "url": "https://2fa.pub/assets/icon-512.png"}
+    },
+    "image": ["https://2fa.pub/assets/og-image.png"],
+    "isPartOf": {"@id": "https://2fa.pub/#website"}
+  }
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/30">
+
+  <header class="border-b border-zinc-900 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <span class="text-zinc-950 font-bold text-sm">2F</span>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-white" style="font-variant-numeric: tabular-nums;">2fa<span class="text-emerald-400">.pub</span></span>
+      </a>
+      <a href="/" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-semibold">オンライン計算ツールを開く →</a>
+    </div>
+  </header>
+
+  <main class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-8 flex-1">
+    <nav class="text-xs text-zinc-500 mb-6" aria-label="パンくず">
+      <a href="/" class="hover:text-emerald-400">2fa.pub</a>
+      <span class="mx-1.5">/</span>
+      <span class="text-zinc-300">Google Authenticator 機種変更ガイド</span>
+    </nav>
+
+    <article class="article space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white leading-snug mb-2">Google Authenticator の機種変更ガイド：二段階認証を安全に新スマホへ移す</h1>
+      <p class="text-sm text-zinc-500 mb-6">2026-11 更新 · 約 7 分で読めます</p>
+
+      <p>連絡先は自動で同期されますが、<strong>二段階認証のアカウントは同期されません</strong>。クラウド同期を有効にしていない限り、Google Authenticator の全 TOTP シークレットは旧端末のローカルにのみ存在します。端的に機種変更すると、すべての 2FA を失うことになりかねません。本ガイドでは状況別に 3 つのルートを解説します。</p>
+
+      <h2>ステップ 0：自分の状況を確認</h2>
+      <table>
+        <tr><th>状況</th><th>判断基準</th><th>ルート</th></tr>
+        <tr><td>新旧両方の手元にある</td><td>両方ともロック解除でき、アプリが開く</td><td>ルート 1：公式エクスポート／インポート</td></tr>
+        <tr><td>旧スマホだけ使える</td><td>新スマホは初期状態、旧アプリは起動する</td><td>ルート 2：エクスポート中継</td></tr>
+        <tr><td>旧スマホを失くした</td><td>旧端末が起動しない・解除できない</td><td>ルート 3：サービスごとの復旧</td></tr>
+      </table>
+
+      <h2>ルート 1：両方ある場合（公式エクスポート／インポート）</h2>
+      <ol>
+        <li>旧スマホ：Google Authenticator → <strong>⋮ メニュー → アカウントのエクスポート</strong></li>
+        <li>対象アカウントを選択（複数可）→ <strong>次へ</strong> で QR コードを表示</li>
+        <li>新スマホ：アプリインストール → <strong>⋮ メニュー → アカウントのインポート</strong></li>
+        <li>新スマホで QR をスキャン → 全アカウントのコードが出ることを確認</li>
+        <li>確認が済んでから旧端末のデータ扱いを決める</li>
+      </ol>
+      <p>公式エクスポートは 1 回につき約 10 アカウントまで。多い場合は数回に分けてください。エクスポートデータの中身は<a href="/guides/ja/google-authenticator-export" class="text-emerald-400 hover:underline">エクスポート解析ガイド</a>で詳説しています。</p>
+
+      <h2>ルート 2：旧スマホだけ使える場合（エクスポート中継）</h2>
+      <p>新スマホで Aegis・2FAS・1Password など別の認証アプリを使いたい、または鍵を持ち出したい場合は中継方式が最適です：</p>
+      <ol>
+        <li>旧スマホでエクスポート QR を生成し<strong>スクリーンショット</strong>を保存</li>
+        <li>PC ブラウザで <a href="/google-extractor" class="text-emerald-400 hover:underline">2fa.pub のエクスポート解析ツール</a>を開き、スクショをアップロード（Ctrl+V 貼り付けも可）</li>
+        <li>各アカウントの発行者・アカウント名・<code>Base32 シークレット</code>を確認——ブラウザ内で完結、アップロードはありません</li>
+        <li>新スマホの認証アプリに手動登録、または <a href="/qr-generator" class="text-emerald-400 hover:underline">2FA QR 生成ツール</a>で otpauth:// 画像に戻してスキャン</li>
+        </ol>
+      <p>アカウント体系に依存せず、汎用的な鍵形式で移行できるのが利点です。</p>
+
+      <h2>ルート 3：旧スマホを失くした場合（サービスごとの復旧）</h2>
+      <p>最初に結論：<strong>認証アプリはクラウドから復元できません</strong>。TOTP シークレットは端末ローカルにのみ存在します。できるのは各サービスでの 2FA リセットです：</p>
+      <ul>
+        <li><strong>バックアップコード</strong>：2FA 登録時に保存したリカバリーコード。1 回限り有効。ログイン後すぐに再登録を</li>
+        <li><strong>紐付け電話／メール</strong>：SMS やメール認証後に 2FA をリセットできるサービスが大半</li>
+        <li><strong>どちらも無い</strong>：サービスへ手動の復旧申請（身分証明が必要な場合が多く、数日〜数週間）</li>
+      </ul>
+      <p>「認証アプリ + バックアップコード」が標準の組み合わせとされるのはこのためです。<strong>オフライン保存されたバックアップコードだけが、端末紛失後にあなたを救います</strong>。</p>
+
+      <h2>移行後にコードが合わない？ 九割は時計です</h2>
+      <p>TOTP は「シークレット + 現在時刻」を 30 秒窓で計算します。バックアップ復元直後やタイムゾーン手動変更直後の端末は時計がずれがちで、サーバーと不一致になります。日付と時刻を<strong>自動設定／ネットワーク提供</strong>に変更して再試行してください。iOS は Google Authenticator 内の時刻同期補正も使えます。</p>
+
+      <h2>移行後に行うべきバックアップ</h2>
+      <ul>
+        <li>重要なサービスの<strong>バックアップコード</strong>をオフライン保存（印刷またはパスワード管理ツール）</li>
+        <li><a href="/guides/ja/google-authenticator-export" class="text-emerald-400 hover:underline">エクスポート解析</a>で全シークレットを Base32 リスト化し、暗号化ボールトへ保存</li>
+        <li>暗号化バックアップ対応の認証アプリ（Aegis、2FAS）への乗り換えを検討——次回は「移行」ではなく「復元」で済みます</li>
+      </ul>
+
+      <h2>よくある質問</h2>
+      <p><strong>移行後も旧スマホのコードは使えますか？</strong>使えます。アカウントは独立して両側に存在し競合しません。ただし新端末の動作確認が済んだら、売却・譲渡前には必ず旧端末のデータを削除してください。</p>
+      <p><strong>クラウド同期を使っていれば？</strong>同じ Google アカウントでログインすれば自動的に反映されます。手動エクスポートはより完全で、よりプライベートな方法です。</p>
+      <p><strong>銀行アプリも同じ方法で移せますか？</strong>標準 TOTP（QR スキャンで登録するタイプ）なら全て同様です。一部の銀行や企業 SSO はエクスポートを無効化しており、その場合は各サービスの再登録フローが必要です。</p>
+      <p><strong>iPhone ⇄ Android の跨ぎは？</strong>エクスポート形式は同一です。ルート 2 の中継が最も確実です。</p>
+
+      <div class="mt-10 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-sm text-zinc-200">エクスポート QR やシークレットをお持ちですか？2fa.pub ならブラウザ内で完結、シークレットは端末外に出ません。</div>
+        <a href="/google-extractor" class="shrink-0 px-5 py-2.5 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-sm">解析ツールを開く →</a>
+      </div>
+    </article>
+
+    <div class="mt-10 pt-6 border-t border-zinc-900 text-xs text-zinc-500 flex flex-wrap gap-x-4 gap-y-2">
+      <a href="/" class="hover:text-emerald-400">← 2FA 計算ツールへ戻る</a>
+      <a href="/google-extractor" class="hover:text-emerald-400">エクスポート解析ツール</a>
+      <a href="/qr-generator" class="hover:text-emerald-400">2FA QR 生成ツール</a>
+      <a href="/guides/lost-2fa-secret-recovery" class="hover:text-emerald-400">シークレット紛失時の復旧ガイド</a>
+      <a href="/guides/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">中文</a>
+      <a href="/guides/en/google-authenticator-transfer-new-phone" class="hover:text-emerald-400">English</a>
+    </div>
+  </main>
+
+  <footer class="max-w-3xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900 text-[11px] text-zinc-600 flex items-center justify-between">
+    <span>2fa.pub — ローカル完結 2FA ツール</span>
+    <span>シークレットは外に出ません</span>
+  </footer>
+</body>
+</html>

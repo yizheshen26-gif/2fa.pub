@@ -1,0 +1,2997 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free 2FA/TOTP Code Calculator Online - 100% Local, No Uploads | 2fa.pub</title>
+  <meta name="description" content="2fa.pub is a 100% client-side 2FA/TOTP code calculator: press Ctrl+V anywhere to decode secrets or QR screenshots instantly, with <=4s smart rollover copy, batch account cleaning, Google Authenticator export decoding, and Steam Guard tokens. Zero uploads." />
+  <meta name="keywords" content="2FA calculator,TOTP generator online,2fa.pub,2fa.live alternative,batch 2FA cleaner,Google Authenticator export decoder,otpauth-migration extractor,Steam Guard calculator,2FA验证码计算器,TOTP在线计算,2FA認証コード" />
+  <meta name="author" content="2fa.pub" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="theme-color" content="#09090B" />
+  <!-- Google AdSense Account Verification -->
+  <meta id="metaGoogleAdsenseAccount" name="google-adsense-account" content="ca-pub-7685572758265529" />
+
+  <!-- Canonical & Hreflang -->
+  <link rel="canonical" href="https://2fa.pub/" />
+
+  <!-- Open Graph & Twitter Card -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="2fa.pub" />
+  <meta property="og:title" content="Free 2FA/TOTP Code Calculator Online - 100% Local, No Uploads | 2fa.pub" />
+  <meta property="og:description" content="2fa.pub is a 100% client-side 2FA/TOTP code calculator: press Ctrl+V anywhere to decode secrets or QR screenshots instantly, with <=4s smart rollover copy, batch account cleaning, Google Authenticator export decoding, and Steam Guard tokens. Zero uploads." />
+  <meta property="og:url" content="https://2fa.pub/" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:image" content="https://2fa.pub/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="2fa.pub — Minimalist Zero-Trust Client-Side 2FA Calculator" />
+  <meta name="twitter:description" content="Press Ctrl+V anywhere to decode 2FA secrets or QR screenshots in 1.5s. 100% local Web Crypto with 4s smart rollover." />
+  <meta name="twitter:image" content="https://2fa.pub/assets/og-image.png" />
+
+  <!-- Favicons & PWA Icons -->
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/icon-64.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icon-180.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- JSON-LD Structured Data for Google SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://2fa.pub/#website",
+        "url": "https://2fa.pub/",
+        "name": "2fa.pub",
+        "description": "Minimalist Zero-Trust Client-Side 2FA/TOTP Calculator",
+        "inLanguage": ["en", "zh-CN", "ja"]
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://2fa.pub/#webapp",
+        "name": "2fa.pub Client-Side 2FA/TOTP Utility",
+        "url": "https://2fa.pub/",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "All",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": [
+          "Site-wide Ctrl+V blind paste for Base32 secrets or QR screenshots",
+          "Smart <=4s expiration rollover auto-copies the next period code",
+          "Batch account/password/secret cleaner (---- and CSV)",
+          "Google Authenticator export QR (otpauth-migration://) local secret extractor",
+          "100% browser Web Crypto computation with URL #Hash privacy isolation"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://2fa.pub/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is it safe to calculate 2FA codes online with 2fa.pub?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — 100% local computation. 2fa.pub uses the native browser Web Crypto API so secrets never leave your device, and URL #Hash parameters are strictly stripped from analytics. You can verify this yourself with the browser's F12 network panel: no secret data is ever transmitted."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does 2fa.pub store my secrets on a server?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. There is no backend database. Secrets live only in the current page's memory; the optional encrypted vault stores entries in your own browser's localStorage, protected by a password only you know. The burn memory button wipes everything immediately."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I generate a verification code from a Base32 secret?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Copy the Base32 secret from your service's 2FA setup page, press Ctrl+V anywhere on 2fa.pub, and the live code appears instantly with a countdown to its expiry. Codes refresh automatically every 30 seconds (or the custom period you configure)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I extract secrets from a Google Authenticator export QR code?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Google Authenticator's Export accounts feature generates an otpauth-migration:// QR code containing all selected accounts. Upload its screenshot or paste the link and 2fa.pub decodes the protobuf locally to list every issuer, account name, and Base32 secret."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does 2fa.pub support Steam Guard codes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The Steam tab computes Steam Guard codes from your steamid shared secret using Steam's modified base32 alphabet, fully offline."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does my code show expired when I paste it?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "TOTP codes are only valid for the remainder of the current 30-second window. 2fa.pub's smart copy solves this: when 4 seconds or fewer remain, copying automatically grabs the next period (+30s) code so it never expires while you switch windows to paste."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use 2fa.pub offline?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The site is a progressive web app (PWA): after your first visit, all assets are cached locally by a service worker, so the calculator keeps working with no internet connection. Everything — TOTP, QR decode, QR generation, Steam codes — is computed locally."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which sites and apps work with these codes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Any service that shows a QR code for authenticator app setup: GitHub, Google, Microsoft, Amazon AWS, Binance, Coinbase, Discord, Dropbox, and hundreds more. If setup shows a can't scan link, the revealed Base32 secret works directly with 2fa.pub."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="/assets/tailwind.css" />
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+  <script src="/assets/vendor/lucide.min.js"></script>
+  <script src="/assets/vendor/jsQR.min.js"></script>
+  <script src="/assets/vendor/qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #09090B;
+      color: #F4F4F5;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      background-image: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(16, 185, 129, 0.10), transparent);
+    }
+    .font-mono-tabular {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    @keyframes pulseFast {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.99); }
+    }
+    .animate-pulse-fast {
+      animation: pulseFast 0.7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes rowRipple {
+      0% { background-color: rgba(16, 185, 129, 0.28); }
+      100% { background-color: transparent; }
+    }
+    .row-copied-flash {
+      animation: rowRipple 1.1s ease-out;
+    }
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#09090B] text-zinc-100 flex flex-col selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- ==================== ULTRA-CLEAN MINIMAL HEADER ==================== -->
+  <header class="border-b border-zinc-900/90 bg-zinc-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center">
+          <i data-lucide="key-round" class="w-5 h-5 text-zinc-950"></i>
+        </div>
+        <div class="flex flex-col leading-none">
+          <span class="text-lg font-bold tracking-tight text-white font-mono-tabular">2fa<span class="text-emerald-400">.pub</span></span>
+          <span class="hidden sm:flex items-center gap-1 text-[10px] text-emerald-400/90 mt-1">
+            <span class="w-1 h-1 rounded-full bg-emerald-400"></span>
+            <span data-i18n="zeroTrustBadge">100% Local</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Clean Segmented Navigation -->
+      <nav class="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-zinc-900/90 p-1 rounded-xl border border-zinc-800/90 text-xs" aria-label="Main navigation" data-i18n-aria="navAriaLabel">
+        <button id="tabBtn-totp" type="button" onclick="switchTab('totp')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-semibold whitespace-nowrap transition bg-emerald-500 text-zinc-950">
+          <span data-i18n="navTotp">Codes</span>
+        </button>
+        <button id="tabBtn-migration" type="button" onclick="switchTab('migration')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white">
+          <span data-i18n="navMigration">Google Extract</span>
+        </button>
+        <button id="tabBtn-qrgen" type="button" onclick="switchTab('qrgen')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white">
+          <span data-i18n="navQrGen">QR Code</span>
+        </button>
+        <button id="tabBtn-steam" type="button" onclick="switchTab('steam')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white">
+          <span data-i18n="navSteam">Steam</span>
+        </button>
+        <button id="tabBtn-vault" type="button" onclick="switchTab('vault')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white">
+          <span data-i18n="navVault">Vault</span>
+        </button>
+        <button id="tabBtn-cli" type="button" onclick="switchTab('cli')" class="tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white">
+          <span data-i18n="navCli">CLI · Audit</span>
+        </button>
+      </nav>
+
+      <!-- Minimal Utility Actions -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="btnHeaderPaste" type="button" onclick="focusOmniInput()" class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-xs text-emerald-300 transition" data-i18n-title="headerPasteTip">
+          <kbd class="font-mono-tabular font-bold">Ctrl+V</kbd>
+          <span class="hidden lg:inline" data-i18n="headerPasteLabel">Blind paste</span>
+        </button>
+        <button id="btnHeaderCopy" type="button" onclick="copySmartSingleCode()" class="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-xs text-emerald-300 transition" data-i18n-title="headerCopyTip">
+          <kbd class="font-mono-tabular font-bold">Ctrl+C</kbd>
+          <span class="hidden lg:inline" data-i18n="headerCopyLabel">Smart copy</span>
+        </button>
+        <button id="btnToggleLang" type="button" onclick="toggleLanguage()" class="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 transition" data-i18n-title="langSwitchTip">
+          🌐 日本語 / 中文
+        </button>
+        <button id="btnBurnAll" type="button" onclick="burnAllData()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-red-500/20 border border-zinc-800 hover:border-red-500/40 text-xs text-zinc-400 hover:text-red-300 transition" data-i18n-title="burnTip">
+          <span data-i18n="burnBtn">Burn Memory (Esc)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CENTERED SINGLE-COLUMN WORKSPACE ==================== -->
+  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-5">
+
+    <!-- ==================== H1: PRIMARY KEYWORD HEADING ==================== -->
+    <h1 class="text-center text-base sm:text-lg font-semibold text-zinc-200 tracking-tight" data-i18n="h1Title">Minimal, 100% Local 2FA / TOTP Code Calculator</h1>
+
+    <!-- ==================== TRUST STRIP: ZERO-TRUST LOCAL & SITE-WIDE BLIND PASTE ==================== -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2.5 text-sm">
+      <button type="button" onclick="switchTab('cli')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 font-medium hover:bg-emerald-500/20 transition whitespace-nowrap" data-i18n-title="trustLocalTip">
+        <i data-lucide="shield-check" class="w-4 h-4"></i>
+        <span data-i18n="trustLocal">100% local · secrets never leave</span>
+      </button>
+      <button type="button" onclick="copySmartSingleCode()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-emerald-500/40 text-zinc-100 transition whitespace-nowrap" data-i18n-title="trustComboTip">
+        <kbd class="px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 font-mono-tabular font-bold text-emerald-400 text-xs">Ctrl+V</kbd>
+        <span data-i18n="trustPaste">Blind paste</span>
+        <span class="text-emerald-400 font-mono-tabular font-bold">→</span>
+        <kbd class="px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 font-mono-tabular font-bold text-emerald-400 text-xs">Ctrl+C</kbd>
+        <span data-i18n="trustCopy">Smart copy (≤4s rollover)</span>
+      </button>
+      <button type="button" onclick="switchTab('cli')" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-zinc-900/80 border border-zinc-700 text-zinc-300 hover:text-zinc-100 hover:border-zinc-600 transition whitespace-nowrap" data-i18n-title="trustAuditTip">
+        <span data-i18n="trustAudit">F12 auditable</span>
+      </button>
+    </div>
+
+    <!-- ==================== TAB 1: MINIMALIST TOTP CALCULATOR ==================== -->
+    <section id="view-totp" class="space-y-4">
+
+      <!-- OMNI-INPUT BOX -->
+      <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <label for="omniInputTextarea" class="text-xs sm:text-sm font-medium text-zinc-200 flex items-center gap-2">
+            <i data-lucide="clipboard-paste" class="w-4 h-4 text-emerald-400"></i>
+            <span data-i18n="inputCabinTitle">Paste secret / batch lines / QR screenshot</span>
+          </label>
+          <div class="flex items-center gap-1.5">
+            <span id="detectedModeBadge" class="text-[11px] font-mono-tabular px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-500" data-i18n="badgeIdle">Waiting for paste</span>
+            <button id="btnSampleSingle" type="button" onclick="loadSampleSingle()" class="text-xs px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition" data-i18n="sampleSingle">Sample</button>
+            <button id="btnSampleBatch" type="button" onclick="loadSampleBatch()" class="text-xs px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-zinc-800 transition" data-i18n="sampleBatch">Batch demo</button>
+          </div>
+        </div>
+
+        <textarea
+          id="omniInputTextarea"
+          rows="3"
+          oninput="handleOmniInput()"
+          data-i18n-placeholder="inputPlaceholder"
+          placeholder="Paste a Base32 secret (e.g. JBSWY3DPEHPK3PXP), batch lines (account----password----secret), or press Ctrl+V to paste a QR screenshot..."
+          class="w-full rounded-xl bg-zinc-950 border border-zinc-800 focus:border-emerald-500/70 p-3 text-xs sm:text-sm font-mono-tabular text-zinc-100 placeholder-zinc-500 outline-none transition resize-y"
+        ></textarea>
+
+        <!-- Compact Bottom Toolbar + Collapsible Advanced Options -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-xs">
+          <div class="flex items-center gap-2 flex-wrap">
+            <label for="qrFileInput" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 transition">
+              <i data-lucide="scan-line" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span data-i18n="scanQrBtn">Scan QR Image</span>
+              <input id="qrFileInput" type="file" accept="image/*" class="hidden" onchange="handleQrFileUpload(event)" />
+            </label>
+            <button id="btnToolbarSmartCopy" type="button" onclick="copySmartSingleCode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-medium transition" data-i18n-title="headerCopyTip">
+              <kbd class="font-mono-tabular font-bold">Ctrl+C</kbd>
+              <span data-i18n="toolbarSmartCopyBtn">Smart copy code (≤4s rollover)</span>
+            </button>
+            <button id="btnQuickSaveVault" type="button" onclick="quickSendToVault()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 transition">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span data-i18n="saveToVaultBtn">Save to Vault</span>
+            </button>
+          </div>
+
+          <details class="relative">
+            <summary class="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition">
+              <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i>
+              <span data-i18n="advancedParams">Advanced (30s / 6 digits / SHA-1) ▾</span>
+            </summary>
+            <div class="mt-2 p-3 rounded-xl bg-zinc-950 border border-zinc-800 grid grid-cols-3 gap-2 text-xs">
+              <div>
+                <label for="selectPeriod" class="block text-[11px] text-zinc-400 mb-1" data-i18n="periodLabel">Period</label>
+                <select id="selectPeriod" onchange="refreshAllCodes()" class="w-full rounded bg-zinc-900 border border-zinc-800 px-2 py-1 font-mono-tabular text-zinc-200">
+                  <option value="30" selected>30s</option>
+                  <option value="60">60s</option>
+                  <option value="15">15s</option>
+                </select>
+              </div>
+              <div>
+                <label for="selectDigits" class="block text-[11px] text-zinc-400 mb-1" data-i18n="digitsLabel">Digits</label>
+                <select id="selectDigits" onchange="refreshAllCodes()" class="w-full rounded bg-zinc-900 border border-zinc-800 px-2 py-1 font-mono-tabular text-zinc-200">
+                  <option value="6" selected>6</option>
+                  <option value="8">8</option>
+                </select>
+              </div>
+              <div>
+                <label for="selectAlgorithm" class="block text-[11px] text-zinc-400 mb-1" data-i18n="algoLabel">Algorithm</label>
+                <select id="selectAlgorithm" onchange="refreshAllCodes()" class="w-full rounded bg-zinc-900 border border-zinc-800 px-2 py-1 font-mono-tabular text-zinc-200">
+                  <option value="SHA-1" selected>SHA-1</option>
+                  <option value="SHA-256">SHA-256</option>
+                  <option value="SHA-512">SHA-512</option>
+                </select>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- STEP 3: BATCH TABLE (Clean, Compact, Click Row to Copy) -->
+      <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-4 sm:p-5 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-xs sm:text-sm font-semibold text-white" data-i18n="listTitle">Accounts (press Ctrl+C for primary · click any row to copy)</span>
+            <span id="batchCountBadge" class="whitespace-nowrap text-xs font-mono-tabular px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+              0
+            </span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer select-none whitespace-nowrap" data-i18n-title="autoAdvanceTip">
+              <input id="autoAdvanceToggle" type="checkbox" onchange="onAutoAdvanceToggle(this.checked)" class="w-3.5 h-3.5 accent-emerald-500 cursor-pointer" />
+              <span class="text-xs text-zinc-400" data-i18n="autoAdvanceLabel">Advance to next row after copy</span>
+            </label>
+            <input
+              id="batchFilterInput"
+              type="text"
+              oninput="renderBatchTable()"
+              data-i18n-placeholder="filterPlaceholder"
+              placeholder="Filter accounts..."
+              class="rounded-lg bg-zinc-950 border border-zinc-800 px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-emerald-500 w-32 sm:w-40"
+            />
+            <button id="btnCopyAllBatch" type="button" onclick="copyAllBatchCodes()" class="whitespace-nowrap px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 transition" data-i18n="copyAllBtn">Copy all codes</button>
+            <button id="btnExportBatchCsv" type="button" onclick="exportBatchCsv()" class="whitespace-nowrap px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 transition" data-i18n="exportCsvBtn">Export cleaned CSV</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-zinc-800/80">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-zinc-800 bg-zinc-950/70 text-[11px] font-mono-tabular text-zinc-400">
+                <th class="py-2.5 px-3">#</th>
+                <th class="py-2.5 px-3" data-i18n="thAccount">Account / Note</th>
+                <th class="py-2.5 px-3 hidden sm:table-cell" data-i18n="thSecret">Secret</th>
+                <th class="py-2.5 px-3" data-i18n="thCurrent">Current code</th>
+                <th class="py-2.5 px-3" data-i18n="thNext">Next (+30s)</th>
+                <th class="py-2.5 px-3" data-i18n="thRemaining">Left</th>
+                <th class="py-2.5 px-3 text-right" data-i18n="thActions">Action</th>
+              </tr>
+            </thead>
+            <tbody id="batchTableBody" class="divide-y divide-zinc-800/50 text-xs sm:text-sm font-mono-tabular">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== TAB 2: GOOGLE AUTHENTICATOR MIGRATION EXTRACTOR ==================== -->
+    <section id="view-migration" class="hidden space-y-4">
+      <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white" data-i18n="migrationTitle">Google Authenticator Export Extractor</h2>
+            <p class="text-xs text-zinc-400 mt-0.5"><span data-i18n="migrationDesc1">Paste an </span><code class="text-emerald-400 font-mono-tabular">otpauth-migration://</code><span data-i18n="migrationDesc2"> link or upload the exported QR screenshot to extract Base32 secrets locally.</span></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnLoadDemoMigration" type="button" onclick="loadDemoMigrationPayload()" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-medium" data-i18n="migrationDemoBtn">Load demo payload</button>
+            <label for="migrationQrInput" class="cursor-pointer px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs font-medium">
+              <span data-i18n="migrationUploadBtn">Upload QR image</span>
+              <input id="migrationQrInput" type="file" accept="image/*" class="hidden" onchange="handleMigrationQrUpload(event)" />
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input
+            id="migrationUriInput"
+            type="text"
+            oninput="parseMigrationInput()"
+            placeholder="otpauth-migration://offline?data=..."
+            class="flex-1 rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 text-xs font-mono-tabular text-zinc-100 outline-none focus:border-emerald-500"
+          />
+          <button id="btnParseMigration" type="button" onclick="parseMigrationInput()" class="px-4 py-2 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-xs" data-i18n="migrationParseBtn">Decode</button>
+          <button id="btnSendMigrationToBatch" type="button" onclick="sendMigrationAccountsToBatch()" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs" data-i18n="migrationSendBtn">Send to calculator</button>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-zinc-800">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-zinc-800 bg-zinc-950/80 text-[11px] font-mono-tabular text-zinc-400">
+                <th class="py-2.5 px-3">#</th>
+                <th class="py-2.5 px-3" data-i18n="thIssuer">Issuer</th>
+                <th class="py-2.5 px-3" data-i18n="thAccountName">Account</th>
+                <th class="py-2.5 px-3" data-i18n="thExtracted">Extracted Base32 secret</th>
+                <th class="py-2.5 px-3" data-i18n="thParams">Params</th>
+                <th class="py-2.5 px-3 text-right" data-i18n="thActions">Action</th>
+              </tr>
+            </thead>
+            <tbody id="migrationResultBody" class="divide-y divide-zinc-800/60 text-xs font-mono-tabular"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: QR CODE GENERATOR ==================== -->
+    <section id="view-qrgen" class="hidden space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-7 bg-[#18181B] border border-[#27272A] rounded-2xl p-5 space-y-3 text-xs">
+          <h2 class="text-base font-bold text-white" data-i18n="qrGenTitle">2FA QR Generator</h2>
+          <div>
+            <label for="qrGenSecret" class="block text-zinc-400 mb-1" data-i18n="qrSecretLabel">Base32 secret *</label>
+            <input id="qrGenSecret" type="text" value="JBSWY3DPEHPK3PXP" oninput="renderQrGenerator()" class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 font-mono-tabular text-sm text-emerald-400 outline-none" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="qrGenIssuer" class="block text-zinc-400 mb-1" data-i18n="qrIssuerLabel">Issuer</label>
+              <input id="qrGenIssuer" type="text" value="GitHub" oninput="renderQrGenerator()" class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 text-zinc-100 outline-none" />
+            </div>
+            <div>
+              <label for="qrGenAccount" class="block text-zinc-400 mb-1" data-i18n="qrAccountLabel">Account name</label>
+              <input id="qrGenAccount" type="text" value="dev@2fa.pub" oninput="renderQrGenerator()" class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 text-zinc-100 outline-none" />
+            </div>
+            <div>
+              <label for="qrGenPeriod" class="block text-zinc-400 mb-1" data-i18n="qrPeriodLabel">Period (s)</label>
+              <input id="qrGenPeriod" type="number" value="30" oninput="renderQrGenerator()" class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 font-mono-tabular text-zinc-100 outline-none" />
+            </div>
+            <div>
+              <label for="qrGenDigits" class="block text-zinc-400 mb-1" data-i18n="qrDigitsLabel">Digits</label>
+              <select id="qrGenDigits" onchange="renderQrGenerator()" class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 font-mono-tabular text-zinc-100 outline-none">
+                <option value="6" selected>6</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex gap-2 pt-1">
+            <input id="qrGenOtpauthUri" type="text" readonly class="flex-1 rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2 font-mono-tabular text-zinc-400" />
+            <button id="btnCopyOtpauthUri" type="button" onclick="copyQrOtpauthUri()" class="px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200" data-i18n="qrCopyLink">Copy link</button>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 bg-[#18181B] border border-[#27272A] rounded-2xl p-5 flex flex-col items-center justify-center space-y-3">
+          <div id="qrCanvasContainer" class="p-3.5 bg-white rounded-2xl">
+            <canvas id="qrOutputCanvas" width="200" height="200"></canvas>
+          </div>
+          <button id="btnDownloadQrPng" type="button" onclick="downloadQrPng()" class="px-4 py-2 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-xs" data-i18n="qrDownload">Download PNG</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: STEAM GUARD CALCULATOR ==================== -->
+    <section id="view-steam" class="hidden space-y-4">
+      <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-5 space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2 border-b border-zinc-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white" data-i18n="steamTitle">Steam Guard Token Calculator</h2>
+            <p class="text-xs text-zinc-400"><span data-i18n="steamDesc1">Supports Base64 </span><code class="font-mono-tabular text-emerald-400">shared_secret</code><span data-i18n="steamDesc2">, maFile JSON or Base32 secret.</span></p>
+          </div>
+          <button id="btnLoadSteamDemo" type="button" onclick="loadSteamSample()" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs" data-i18n="steamDemoBtn">Load demo secret</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <div class="space-y-2">
+            <textarea
+              id="steamSecretInput"
+              rows="4"
+              oninput="refreshSteamCode()"
+              data-i18n-placeholder="steamPlaceholder"
+              placeholder="Paste shared_secret (Base64), maFile JSON or Base32 secret..."
+              class="w-full rounded-xl bg-zinc-950 border border-zinc-800 p-3 font-mono-tabular text-xs text-zinc-100 placeholder-zinc-500 outline-none"
+            ></textarea>
+            <p id="steamParseModeHint" class="text-xs font-mono-tabular text-zinc-500" data-i18n="steamIdle">Waiting for input</p>
+          </div>
+
+          <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between text-xs text-zinc-400">
+              <span data-i18n="steamCurrent">Current Steam token</span>
+              <span id="steamRemainingLabel" class="font-mono-tabular text-emerald-400">--s</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div id="steamCurrentToken" onclick="copySteamToken()" class="cursor-pointer text-4xl font-bold font-mono-tabular tracking-widest text-white select-all">-----</div>
+              <div class="text-right">
+                <span class="text-[11px] text-zinc-500 block" data-i18n="thNext">Next (+30s)</span>
+                <span id="steamNextToken" class="text-lg font-bold font-mono-tabular text-zinc-300">-----</span>
+              </div>
+            </div>
+            <div class="w-full h-1.5 rounded-full bg-zinc-900 overflow-hidden">
+              <div id="steamProgressBar" class="h-full bg-emerald-500" style="width: 75%;"></div>
+            </div>
+            <button id="btnCopySteamToken" type="button" onclick="copySteamToken()" class="w-full py-2 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-xs" data-i18n="steamCopyBtn">Press Ctrl+C or click to copy Steam token (≤4s auto-rollover)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: AES-GCM VAULT ==================== -->
+    <section id="view-vault" class="hidden space-y-4">
+      <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-5 space-y-4">
+        <div class="flex items-center justify-between flex-wrap gap-2 border-b border-zinc-800 pb-3">
+          <div>
+            <h2 class="text-base font-bold text-white" data-i18n="vaultTitle">Encrypted Vault (AES-256-GCM)</h2>
+            <p class="text-xs text-zinc-400" data-i18n="vaultDesc">Derives a key from your master password via PBKDF2 (100,000 iterations) and stores data encrypted in browser-local storage.</p>
+          </div>
+          <span id="vaultStatusBadge" class="text-xs font-mono-tabular px-2.5 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-300" data-i18n="vaultChecking">Checking...</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-3">
+            <input
+              id="vaultMasterPassword"
+              type="password"
+              data-i18n-placeholder="vaultPasswordPlaceholder"
+              placeholder="Enter master password..."
+              class="w-full rounded-xl bg-zinc-950 border border-zinc-800 px-3.5 py-2 text-xs font-mono-tabular text-zinc-100 outline-none"
+            />
+            <div class="flex flex-wrap gap-2">
+              <button id="btnEncryptAndSaveVault" type="button" onclick="encryptAndSaveVault()" class="px-3.5 py-2 rounded-xl bg-emerald-500 text-zinc-950 font-semibold text-xs" data-i18n="vaultSaveBtn">🔒 Encrypt & save current data</button>
+              <button id="btnUnlockVault" type="button" onclick="decryptAndLoadVault()" class="px-3.5 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs" data-i18n="vaultLoadBtn">🔓 Decrypt & load</button>
+              <button id="btnClearVaultStorage" type="button" onclick="clearEncryptedVault()" class="px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs" data-i18n="vaultWipeBtn">🗑️ Destroy ciphertext</button>
+            </div>
+          </div>
+          <pre id="vaultCiphertextPreview" class="h-32 overflow-auto rounded-xl bg-zinc-950 border border-zinc-800 p-3 text-[11px] font-mono-tabular text-zinc-400 whitespace-pre-wrap break-all"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: CLI & SECURITY AUDIT ==================== -->
+    <section id="view-cli" class="hidden space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+
+        <!-- LEFT: LIVE SECURITY AUDIT -->
+        <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-white" data-i18n="auditTitle">Live Security Audit</h2>
+              <p class="text-xs text-zinc-400 mt-0.5" data-i18n="auditDesc">Measured live on this page — verify it yourself anytime.</p>
+            </div>
+            <button id="btnRunSecurityAudit" type="button" onclick="runLiveSecurityAudit()" class="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-medium" data-i18n="auditRefresh">Refresh audit</button>
+          </div>
+          <div id="securityAuditResultBox" class="grid grid-cols-2 gap-2.5"></div>
+
+          <details class="rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden">
+            <summary class="cursor-pointer flex items-center justify-between px-3.5 py-3 text-xs select-none">
+              <span class="text-zinc-300">Cloudflare Pages <code class="text-emerald-400 font-mono-tabular">_headers</code> <span data-i18n="cspSummary">security response headers</span></span>
+              <span class="flex items-center gap-3">
+                <button type="button" onclick="event.stopPropagation();copyHeadersConfig()" class="text-emerald-400 hover:underline font-mono-tabular text-[11px]" data-i18n="copyBtn">Copy</button>
+                <span class="text-zinc-500 font-mono-tabular text-[11px]" data-i18n="expandHint">Expand ▾</span>
+              </span>
+            </summary>
+            <pre id="cspHeadersCodeBlock" class="px-3.5 pb-3.5 text-[11px] leading-relaxed font-mono-tabular text-emerald-300/90 whitespace-pre-wrap break-all">/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://pagead2.googlesyndication.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://*.analytics.google.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://ep1.adtrafficquality.google https://*.adtrafficquality.google https://cloudflareinsights.com; frame-ancestors 'none';
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin</pre>
+          </details>
+        </div>
+
+        <!-- RIGHT: TERMINAL CLI SNIPPETS -->
+        <div class="bg-[#18181B] border border-[#27272A] rounded-2xl p-5 space-y-3">
+          <div>
+            <h2 class="text-base font-bold text-white" data-i18n="cliTitle">One-line CLI 2FA generation</h2>
+            <p class="text-xs text-zinc-400 mt-0.5" data-i18n="cliDesc">Compute without the site: copy any snippet into your terminal.</p>
+          </div>
+          <div class="rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden">
+            <div class="flex items-center justify-between px-3.5 py-2 border-b border-zinc-800/80 text-xs">
+              <span class="text-zinc-300" data-i18n="cliOathTitle">macOS / Linux (oathtool)</span>
+              <button id="btnCopyCliOath" type="button" onclick="copyCliSnippet('oath')" class="text-emerald-400 hover:underline font-mono-tabular text-[11px]" data-i18n="copyBtn">Copy</button>
+            </div>
+            <pre id="cliSnippetOath" class="px-3.5 py-2.5 text-xs font-mono-tabular text-zinc-200 whitespace-pre-wrap break-all">oathtool --totp -b "JBSWY3DPEHPK3PXP"</pre>
+          </div>
+          <div class="rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden">
+            <div class="flex items-center justify-between px-3.5 py-2 border-b border-zinc-800/80 text-xs">
+              <span class="text-zinc-300" data-i18n="cliPyTitle">Python 3 zero-dependency one-liner</span>
+              <button id="btnCopyCliPy" type="button" onclick="copyCliSnippet('py')" class="text-emerald-400 hover:underline font-mono-tabular text-[11px]" data-i18n="copyBtn">Copy</button>
+            </div>
+            <pre id="cliSnippetPy" class="px-3.5 py-2.5 text-xs font-mono-tabular text-zinc-200 whitespace-pre-wrap break-all">python3 -c "import base64,hmac,hashlib,struct,time;k=base64.b32decode('JBSWY3DPEHPK3PXP',True);h=hmac.new(k,struct.pack('>Q',int(time.time()//30)),hashlib.sha1).digest();o=h[-1]&15;print(f'{(struct.unpack(\">I\",h[o:o+4])[0]&0x7fffffff)%1000000:06d}')"</pre>
+          </div>
+          <div class="rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden">
+            <div class="flex items-center justify-between px-3.5 py-2 border-b border-zinc-800/80 text-xs">
+              <span class="text-zinc-300" data-i18n="cliAliasTitle">Shell alias (zsh / bash)</span>
+              <button id="btnCopyCliAlias" type="button" onclick="copyCliSnippet('alias')" class="text-emerald-400 hover:underline font-mono-tabular text-[11px]" data-i18n="copyBtn">Copy</button>
+            </div>
+            <pre id="cliSnippetAlias" class="px-3.5 py-2.5 text-xs font-mono-tabular text-zinc-200 whitespace-pre-wrap break-all">2fa() { oathtool --totp -b "$1" | pbcopy && echo "✅ Copied 2FA to clipboard"; }</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== NON-INTRUSIVE GOOGLE ADSENSE SLOT (FOOTER RESPONSIVE BANNER) ==================== -->
+    <div id="adContainerBottom" class="rounded-2xl bg-zinc-900/35 border border-zinc-800/60 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <span class="text-[10px] font-mono-tabular uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 shrink-0">AdSense Multiplex</span>
+        <div id="adsenseMountBottom" class="flex-1 truncate text-zinc-400">
+          <ins class="adsbygoogle"
+               style="display:block;min-height:90px;max-height:120px;overflow:hidden"
+               data-ad-client="ca-pub-7685572758265529"
+               data-ad-slot="1000000002"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+          <span id="adBottomFallbackText" class="text-zinc-500" data-i18n="adFallback">Bottom responsive ad slot</span>
+        </div>
+      </div>
+      <button id="btnHideBottomAd" type="button" onclick="dismissAdSlot('adContainerBottom')" class="text-zinc-500 hover:text-zinc-300 text-[11px] font-mono-tabular" data-i18n="adHide">Hide ✕</button>
+    </div>
+
+    <!-- ==================== FOLDED SEO & SHORTCUT GUIDE DRAWER (Zero Clutter by Default) ==================== -->
+    <details class="rounded-2xl bg-zinc-900/40 border border-zinc-900 px-4 py-3 text-xs text-zinc-400">
+      <summary class="cursor-pointer flex items-center justify-between font-medium text-zinc-400 hover:text-zinc-200 transition">
+        <span class="flex items-center gap-2">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span data-i18n="drawerTitle">Shortcuts & tool navigation</span>
+        </span>
+        <span class="font-mono-tabular text-[11px]" data-i18n="drawerExpand">Click to expand ▾</span>
+      </summary>
+
+      <div class="pt-4 mt-3 border-t border-zinc-800/80 space-y-4">
+        <div class="flex flex-wrap items-center gap-2 font-mono-tabular text-[11px]">
+          <button id="btnShortcutPaste" type="button" onclick="triggerBlindPasteDemo()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scPaste">Ctrl+V blind paste anywhere</button>
+          <button id="btnShortcutEnter" type="button" onclick="copySmartSingleCode()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scEnter">Ctrl+C smart copy (≤4s rollover)</button>
+          <button id="btnShortcutSlash" type="button" onclick="focusOmniInput()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scSlash">/ focus input</button>
+          <button id="btnShortcutAltTabs" type="button" onclick="cycleNextTab()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scAlt">Alt + 1~6 switch tools</button>
+          <button id="btnShortcutEsc" type="button" onclick="burnAllData()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scEsc">Esc wipe memory</button>
+          <button id="btnQuickVerifyZeroNet" type="button" onclick="loadSampleBatch()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-sky-300" data-i18n="scBatchDemo">▶ Try batch cleaning</button>
+          <button id="btnDemoRolloverDrawer" type="button" onclick="simulateSmartRolloverDemo()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-red-300" data-i18n="scRolloverDemo">≤4s rollover demo</button>
+          <button id="btnOpenQrDrawer" type="button" onclick="openCurrentInQrGenerator()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300" data-i18n="scToQr">Convert to QR for phone</button>
+          <button id="btnCopyHashUrlDrawer" type="button" onclick="copyBookmarkHashUrl()" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-amber-300"><span data-i18n="hashBookmarkBtn">#Hash Bookmark</span></button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+          <button id="btnSeoNavTotp" type="button" onclick="switchTab('totp')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold" data-i18n="seoTotpTitle">/ Batch 2FA calc</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoTotpDesc">---- & CSV parsing</div>
+          </button>
+          <button id="btnSeoNavMigration" type="button" onclick="switchTab('migration')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold">/google-extractor</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoMigrationDesc">Extract secrets from exports</div>
+          </button>
+          <button id="btnSeoNavQr" type="button" onclick="switchTab('qrgen')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold">/qr-generator</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoQrDesc">Base32 to scannable QR</div>
+          </button>
+          <button id="btnSeoNavSteam" type="button" onclick="switchTab('steam')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold">/steam</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoSteamDesc">Steam 5-char tokens</div>
+          </button>
+          <button id="btnSeoNavVault" type="button" onclick="switchTab('vault')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold">/vault</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoVaultDesc">AES-256-GCM local vault</div>
+          </button>
+          <button id="btnSeoNavCli" type="button" onclick="switchTab('cli')" class="text-left p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-emerald-500/40">
+            <div class="font-mono-tabular text-emerald-400 font-semibold">/cli</div>
+            <div class="text-zinc-400 text-[11px] mt-0.5" data-i18n="seoCliDesc">CLI scripts & zero-network proof</div>
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+          <span class="text-zinc-500" data-i18n="guidesLabel">Guides:</span>
+          <a id="guideLinkExport" href="/guides/en/google-authenticator-export" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-emerald-300 hover:border-emerald-500/50 transition" data-i18n="guideLinkExportText">Google Authenticator Export Decoder Guide</a>
+          <a id="guideLinkSteam" href="/steam" onclick="event.preventDefault();switchTab('steam')" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition" data-i18n="guideLinkSteamText">Steam Guard Token Calculator</a>
+          <a id="guideLinkQr" href="/qr-generator" onclick="event.preventDefault();switchTab('qrgen')" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition" data-i18n="guideLinkQrText">2FA QR Code Generator</a>
+        </div>
+      </div>
+    </details>
+
+  </main>
+
+  <!-- ==================== SEO CONTENT SECTION (visible, semantic, static) ==================== -->
+  <section id="seo-content" class="w-full border-t border-zinc-900/80 bg-zinc-950/60" aria-label="About 2FA and TOTP codes">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 text-sm text-zinc-400 leading-relaxed space-y-10">
+
+      <div>
+        <h2 class="text-lg font-bold text-zinc-100 mb-3">Free Online 2FA / TOTP Authenticator Code Calculator — 100% Local</h2>
+        <p>
+          2fa.pub is a free online two-factor authentication (2FA) code calculator that runs entirely in your browser.
+          It works like a web version of Google Authenticator: paste a Base32 secret (or a QR screenshot, an
+          <code class="text-emerald-400/90">otpauth://</code> link, or a batch of account lines) and get a live
+          6-digit TOTP verification code generated with the native Web Crypto API. Nothing is uploaded — secrets
+          never leave your device, and there is no account or sign-up required.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-zinc-100 mb-3">How to Generate a 2FA Code in 3 Steps</h2>
+        <ol class="list-decimal pl-5 space-y-1.5">
+          <li><strong class="text-zinc-200">Paste your secret</strong> — press <code class="text-emerald-400/90">Ctrl+V</code> anywhere on the page with a Base32 secret, an <code class="text-emerald-400/90">otpauth://</code> URI, or a screenshot of a QR code.</li>
+          <li><strong class="text-zinc-200">Get the code instantly</strong> — the current TOTP code appears in the account list and is copied automatically.</li>
+          <li><strong class="text-zinc-200">Paste it into the login form</strong> — smart rollover keeps the copy fresh for at least 4 more seconds before the code expires.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-zinc-100 mb-3">What Is a TOTP Code?</h2>
+        <p>
+          TOTP (Time-based One-Time Password, RFC 6238) is the algorithm behind most two-factor authentication apps,
+          including Google Authenticator, Microsoft Authenticator, Aegis, and 1Password. It combines your shared
+          secret key with the current Unix time (usually in 30-second windows) using an HMAC-SHA1 hash, producing a
+          short numeric code that changes every period. Because the code is computed from time and the secret alone,
+          both your phone app and the server can verify it without any network request between them.
+        </p>
+        <p class="mt-2">
+          2fa.pub implements the same RFC 6238 algorithm with the browser's built-in Web Crypto API, so results are
+          byte-for-byte identical to Google Authenticator — including support for SHA-256/SHA-512, 8-digit codes, and
+          custom periods.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-zinc-100 mb-3">Frequently Asked Questions</h2>
+        <div class="space-y-5">
+          <div>
+            <h3 class="font-semibold text-zinc-200">Is it safe to calculate 2FA codes online with 2fa.pub?</h3>
+            <p>Yes — 100% local computation. 2fa.pub uses the native browser Web Crypto API so secrets never leave your device, and URL <code class="text-emerald-400/90">#</code>Hash parameters are strictly stripped from analytics. You can verify this yourself with the browser's F12 network panel: no secret data is ever transmitted.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Does 2fa.pub store my secrets on a server?</h3>
+            <p>No. There is no backend database. Secrets live only in the current page's memory; the optional encrypted vault stores entries in your own browser's localStorage, protected by a password only you know. The "burn memory" button wipes everything immediately.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">How do I generate a verification code from a Base32 secret?</h3>
+            <p>Copy the Base32 secret from your service's 2FA setup page, press <code class="text-emerald-400/90">Ctrl+V</code> anywhere on 2fa.pub, and the live code appears instantly with a countdown to its expiry. Codes refresh automatically every 30 seconds (or the custom period you configure).</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Can I extract secrets from a Google Authenticator export QR code?</h3>
+            <p>Yes. Google Authenticator's "Export accounts" feature generates an <code class="text-emerald-400/90">otpauth-migration://</code> QR code containing all selected accounts. Upload its screenshot or paste the link and 2fa.pub decodes the protobuf locally to list every issuer, account name, and Base32 secret — see our <a href="/guides/google-authenticator-export" class="text-emerald-400 hover:underline">Google Authenticator export decoding guide</a>.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Does 2fa.pub support Steam Guard codes?</h3>
+            <p>Yes. The Steam tab computes Steam Guard codes from your <code class="text-emerald-400/90">steamid</code> shared secret using Steam's modified base32 alphabet, fully offline.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Why does my code show expired when I paste it?</h3>
+            <p>TOTP codes are only valid for the remainder of the current 30-second window. 2fa.pub's smart copy solves this: when 4 seconds or fewer remain, copying automatically grabs the next period (+30s) code so it never expires while you switch windows to paste.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Can I use 2fa.pub offline?</h3>
+            <p>Yes. The site is a progressive web app (PWA): after your first visit, all assets are cached locally by a service worker, so the calculator keeps working with no internet connection. Everything — TOTP, QR decode, QR generation, Steam codes — is computed locally.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-zinc-200">Which sites and apps work with these codes?</h3>
+            <p>Any service that shows a QR code for "authenticator app" setup: GitHub, Google, Microsoft, Amazon AWS, Binance, Coinbase, Discord, Dropbox, and hundreds more. If setup shows a "can't scan?" link, the revealed Base32 secret works directly with 2fa.pub.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-lg font-bold text-zinc-100 mb-3">More Free Tools &amp; Guides</h2>
+        <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-1.5">
+          <li><a href="/google-extractor" class="text-emerald-400 hover:underline">Google Authenticator Export Extractor</a> — decode otpauth-migration QR codes</li>
+          <li><a href="/qr-generator" class="text-emerald-400 hover:underline">2FA QR Code Generator</a> — turn secrets into scannable otpauth QR codes</li>
+          <li><a href="/steam" class="text-emerald-400 hover:underline">Steam Guard Code Calculator</a> — Steam mobile authenticator codes</li>
+          <li><a href="/vault" class="text-emerald-400 hover:underline">Encrypted Vault</a> — password-protected local secret storage</li>
+          <li><a href="/cli" class="text-emerald-400 hover:underline">CLI &amp; Audit</a> — oathtool / Python one-liners and white-box audit</li>
+          <li><a href="/guides/google-authenticator-export" class="text-emerald-400 hover:underline">Guide: Decode Google Authenticator Exports</a> — otpauth-migration protobuf explained</li>
+          <li><a href="/guides/google-authenticator-transfer-new-phone" class="text-emerald-400 hover:underline">Guide: Transfer Google Authenticator to a New Phone</a> — official export/import &amp; relay routes</li>
+          <li><a href="/guides/lost-2fa-secret-recovery" class="text-emerald-400 hover:underline">Guide: Lost 2FA Secret Recovery</a> — scenario-by-scenario self-rescue</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Minimal Footer with Live Stats Pill -->
+  <footer class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-4 border-t border-zinc-900/80 text-[11px] text-zinc-500">
+    <nav class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-3 pb-3 border-b border-zinc-900/60" aria-label="Footer navigation">
+      <a href="/google-extractor" class="hover:text-emerald-400 transition-colors">Google Authenticator Extractor</a>
+      <span class="text-zinc-800">·</span>
+      <a href="/qr-generator" class="hover:text-emerald-400 transition-colors">QR Generator</a>
+      <span class="text-zinc-800">·</span>
+      <a href="/steam" class="hover:text-emerald-400 transition-colors">Steam Guard</a>
+      <span class="text-zinc-800">·</span>
+      <a href="/vault" class="hover:text-emerald-400 transition-colors">Vault</a>
+      <span class="text-zinc-800">·</span>
+      <a href="/cli" class="hover:text-emerald-400 transition-colors">CLI &amp; Audit</a>
+      <span class="text-zinc-800">·</span>
+      <a href="/guides/google-authenticator-export" class="hover:text-emerald-400 transition-colors">2FA Guides</a>
+    </nav>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="font-mono-tabular text-zinc-400 font-semibold">2fa.pub</span>
+        <span data-i18n="heroSubtitle">Zero-Trust Client-Side 2FA Utility</span>
+      </div>
+      <div class="flex items-center gap-3 font-mono-tabular">
+        <span data-i18n="shortcutHint">Ctrl+V Paste · Ctrl+C Copy</span>
+        <span>·</span>
+        <span id="utcClockDisplay">UTC --:--:--</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Global Toast Notification -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 pointer-events-none flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0"></div>
+
+  <!-- Hidden Canvas for Image QR Decoding -->
+  <canvas id="hiddenQrDecodeCanvas" class="hidden"></canvas>
+
+  <!-- ==================== CORE APPLICATION LOGIC ==================== -->
+  <script>
+    let currentLang = 'en';
+    let currentTab = 'totp';
+    let parsedAccounts = [];
+    let extractedMigrationAccounts = [];
+    let rowCopiedState = {};
+    let autoAdvanceEnabled = false;
+    let autoAdvanceIndex = 0;
+    let simulatedRolloverUntil = 0;
+    // =========================================================================
+    // SITE ANALYTICS (GA4) & GOOGLE ADSENSE INTEGRATION — fixed IDs, no admin UI
+    // =========================================================================
+    const GA_MEASUREMENT_ID = 'G-LQ7821X2KZ';
+    const ADSENSE_CLIENT_ID = 'ca-pub-7685572758265529';
+    const ADSENSE_SLOT_BOTTOM_ID = '1000000002';
+
+    // Privacy-Safe Sanitizer: NEVER send window.location.hash or secrets to GA4
+    function getSanitizedPageUrl() {
+      try {
+        return window.location.origin + window.location.pathname;
+      } catch (e) {
+        return 'https://2fa.pub/';
+      }
+    }
+
+    function trackSiteEvent(eventName, metaObj) {
+      // Forward to Google Analytics 4 with strict #Hash scrubbing (never any secret content)
+      if (typeof window.gtag === 'function') {
+        try {
+          window.gtag('event', eventName, Object.assign({
+            page_location: getSanitizedPageUrl(),
+            anonymize_ip: true
+          }, metaObj || {}));
+        } catch (e) {}
+      }
+    }
+
+    function injectAnalyticsAndAdsenseScripts() {
+      // 1. Sync AdSense meta & <ins> attributes with the fixed IDs
+      const metaAd = document.getElementById('metaGoogleAdsenseAccount');
+      if (metaAd) metaAd.setAttribute('content', ADSENSE_CLIENT_ID);
+      const adSlot = document.querySelector('ins.adsbygoogle');
+      if (adSlot) {
+        adSlot.setAttribute('data-ad-client', ADSENSE_CLIENT_ID);
+        adSlot.setAttribute('data-ad-slot', ADSENSE_SLOT_BOTTOM_ID);
+      }
+
+      // 2. GA4 dataLayer bootstrap with strict #Hash scrubbing
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function() { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', GA_MEASUREMENT_ID, {
+        page_location: getSanitizedPageUrl(),
+        send_page_view: true,
+        anonymize_ip: true
+      });
+      if (!document.getElementById('dynamicGtagScript')) {
+        try {
+          const g = document.createElement('script');
+          g.id = 'dynamicGtagScript';
+          g.async = true;
+          g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_MEASUREMENT_ID);
+          document.head.appendChild(g);
+        } catch (e) {}
+      }
+
+      // 3. Mount the AdSense loader
+      if (!document.getElementById('dynamicAdsenseScript')) {
+        try {
+          const s = document.createElement('script');
+          s.id = 'dynamicAdsenseScript';
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(ADSENSE_CLIENT_ID);
+          document.head.appendChild(s);
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      }
+    }
+
+    function dismissAdSlot(containerId) {
+      const el = document.getElementById(containerId);
+      if (el) el.classList.add('hidden');
+    }
+
+    const I18N = {
+      zh: {
+        pageTitle: '2FA/TOTP 验证码在线计算器 - 纯本地 · Ctrl+V 秒出码 · 批量清洗 | 2fa.pub',
+        zeroTrustBadge: '纯本地计算',
+        shortcutHint: 'Ctrl+V 盲粘出码 · Ctrl+C 智能复制',
+        burnBtn: '焚毁内存 (Esc)',
+        burnTip: '按 Esc 清空',
+        heroSubtitle: '纯前端零信任 2FA 工具站',
+        h1Title: '极简、纯本地的 2FA / TOTP 验证码在线计算器',
+        navTotp: '验证码',
+        navMigration: 'Google 提取',
+        navQrGen: '二维码',
+        navSteam: 'Steam',
+        navVault: '保险箱',
+        navCli: 'CLI · 审计',
+        headerPasteLabel: '全站盲粘',
+        headerPasteTip: '在页面任意位置按 Ctrl+V，粘贴密钥或二维码截图立即出码',
+        trustLocal: '100% 纯本地计算 · 密钥零外发',
+        trustLocalTip: '打开实时安全审计：查看运行期外发请求数与加密核校验',
+        trustPaste: '盲粘秒出码',
+        trustAudit: 'F12 白盒可审计',
+        trustAuditTip: 'F12 打开开发者工具即可逐行审计加密核',
+        inputCabinTitle: '粘贴密钥 / 批量账密 / 二维码截图',
+        scanQrBtn: '识别二维码图',
+        hashBookmarkBtn: '#Hash 书签直链',
+        saveToVaultBtn: '存入加密柜',
+        badgeIdle: '等待粘贴密钥',
+        badgeSingle: '单密钥模式',
+        badgeMultiSuffix: ' 个账号',
+        badgeMultiPrefix: '已识别 ',
+        sampleSingle: '示例',
+        sampleBatch: '批量示例',
+        inputPlaceholder: '粘贴 Base32 密钥 (如 JBSWY3DPEHPK3PXP) 或多行账密 (账号----密码----密钥)，或直接按 Ctrl+V 粘贴二维码截图...',
+        advancedParams: '高级参数 (30s / 6位 / SHA-1) ▾',
+        periodLabel: '周期',
+        digitsLabel: '位数',
+        algoLabel: '算法',
+        listTitle: '账号列表 (按 Ctrl+C 复制首条 · 点击任意行直接复制)',
+        unitAccounts: ' 个账号',
+        unitAccountOne: ' 个账号',
+        toastOneCodeCopied: '✅ 已批量复制 1 个验证码',
+        filterPlaceholder: '筛选账号...',
+        copyAllBtn: '一键复制全部验证码',
+        autoAdvanceLabel: '复制后移到下一行',
+        autoAdvanceTip: '开启后：点击行或按 Ctrl+C 复制当前账号验证码后，自动选中下一行（高亮显示），Ctrl+C 连续复制下一个账号',
+        exportCsvBtn: '导出清洗后 CSV',
+        thAccount: '账号 / 备注',
+        thSecret: '密钥',
+        thCurrent: '当前验证码',
+        thNext: '下期 (+30s)',
+        thRemaining: '剩余',
+        thActions: '操作',
+        emptyCtaTitle: '左手流零点击：按 Ctrl+V 任意处盲粘秒出码，按 Ctrl+C 随时复制最新验证码 (≤4s 自动顺延)',
+        emptyCtaSub: '无需聚焦输入框 · 鼠标划词时自动放行普通复制 · 点击此处可手动输入',
+        btnCopy: '复制',
+        btnRollover: '⚡ 顺延复制',
+        defaultSecretLabel: '默认密钥 #',
+        accountLabel: '账号 #',
+        toastNeedSecret: '请先粘贴有效的 2FA 密钥',
+        toastCopied: '✅ 已复制验证码: ',
+        toastCopiedRollover: '⚡ 剩余 ≤4s，已自动为您复制下一期验证码: ',
+        toastCopiedNext: '⏭️ 已复制下一期验证码: ',
+        toastRowCopied: '已复制: ',
+        toastRowRollover: '已顺延复制下期验证码: ',
+        toastBatchCopied1: '✅ 已批量复制 ',
+        toastBatchCopied2: ' 个验证码',
+        toastCsvExported: '📥 已导出 CSV',
+        toastSampleSingle: '已填入单密钥示例',
+        toastSampleBatch: '已填入 4 个工作室杂乱账密并自动清洗',
+        toastNeedSecretShort: '请先输入密钥',
+        toastHashCopied: '🔖 已复制 #Hash 书签链接，保存书签后点开即用',
+        toastBurned: '🔥 已清空内存数据',
+        toastQrFailed: '未识别出二维码',
+        toastQrNotReady: '二维码引擎未就绪',
+        migrationTitle: 'Google Authenticator 导出码提取',
+        migrationDesc1: '粘贴 ',
+        migrationDesc2: ' 链接或上传导出二维码截图，本地提取 Base32 密钥。',
+        migrationDemoBtn: '加载演示迁移码',
+        migrationUploadBtn: '上传二维码图',
+        migrationParseBtn: '解码',
+        migrationSendBtn: '发送到主计算器',
+        thIssuer: '服务商',
+        thAccountName: '账户名',
+        thExtracted: '提取出的 Base32 密钥',
+        thParams: '参数',
+        migrationEmpty: '请粘贴链接或点击上方演示按钮',
+        migrationFail: '解码失败，请检查链接格式',
+        btnCopySecret: '复制密钥',
+        digitsUnit: '位',
+        toastMigrationDecoded: '📦 已拆解 Google 迁移二维码',
+        toastBatchExtracted1: '⚡ 已清洗提取 ',
+        toastBatchExtracted2: ' 个账号',
+        toastSecretCopied: '✅ 已复制密钥: ',
+        toastImported: '🚀 已导入主计算器',
+        qrGenTitle: '2FA 二维码生成器',
+        qrSecretLabel: 'Base32 密钥 *',
+        qrIssuerLabel: '服务商 (Issuer)',
+        qrAccountLabel: '账号名 (Account)',
+        qrPeriodLabel: '周期 (秒)',
+        qrDigitsLabel: '位数',
+        qrCopyLink: '复制链接',
+        qrDownload: '下载 PNG 二维码图片',
+        toastLinkCopied: '✅ 已复制链接',
+        steamTitle: 'Steam Guard 令牌计算器',
+        steamDesc1: '支持 Base64 ',
+        steamDesc2: '、maFile JSON 或 Base32 密钥。',
+        steamDemoBtn: '填入演示密钥',
+        steamPlaceholder: '粘贴 shared_secret (Base64)、maFile JSON 或 Base32 密钥...',
+        steamIdle: '等待输入密钥',
+        steamHintMaFile: '已识别：maFile JSON (',
+        steamHintB32: '已识别：Base32 密钥',
+        steamHintB64: '已识别：Base64 shared_secret',
+        steamCurrent: '当前 Steam 令牌',
+        steamRemaining: '剩余 ',
+        steamCopyBtn: '按 Ctrl+C 或点击复制 Steam 令牌 (≤4s 自动顺延)',
+        toastSteamCopied: '🎮 已复制 Steam 令牌: ',
+        vaultTitle: '加密保险箱 (AES-256-GCM)',
+        vaultDesc: '主口令经 PBKDF2 (100,000 次迭代) 派生密钥，加密保存到浏览器本地存储。',
+        vaultChecking: '检测中...',
+        vaultBadgeSaved: '🔒 已加密存档',
+        vaultBadgeMemory: '🛡️ 纯内存无痕模式',
+        vaultPreviewMemory: '当前环境仅在内存中运行。',
+        vaultPreviewClean: '当前未落盘任何数据（关闭页面即销毁）。',
+        vaultPasswordPlaceholder: '输入主加密口令 (Master Password)...',
+        vaultSaveBtn: '🔒 加密保存当前账密',
+        vaultLoadBtn: '🔓 解密并载入',
+        vaultWipeBtn: '🗑️ 销毁密文',
+        toastVaultNeedInput: '请输入主口令并确保主计算器有密钥数据',
+        toastVaultSaved: '🔒 已加密保存',
+        toastVaultSaveFail: '保存失败',
+        toastVaultLoaded: '🔓 解密成功',
+        toastVaultWrongPass: '❌ 口令错误',
+        toastVaultWiped: '🗑️ 已销毁本地密文',
+        auditTitle: '实时安全审计',
+        auditDesc: '以下数据由本页运行时实测得出，可自行复验。',
+        auditRefresh: '刷新审计',
+        auditCrypto: 'Web Crypto 引擎',
+        auditCryptoOk: '✅ 已启用',
+        auditCryptoBad: '❌ 不可用',
+        auditRequests: '运行期外发请求',
+        auditReqUnit: ' 次 · 均不含密钥',
+        auditHash: '#Hash 锚点隔离',
+        auditHashOk: '✅ 不随 HTTP 发送',
+        auditSanitize: '统计上报脱敏',
+        auditSanitizeOk: '✅ 已开启',
+        auditCore: '白盒加密核 SHA-256',
+        auditDomain: '域名锁与脱敏',
+        auditDomainOk: '✅ 已激活',
+        auditDomainBad: '⚠️ 非授权镜像域',
+        cspSummary: '安全响应头配置',
+        copyBtn: '复制',
+        expandHint: '展开 ▾',
+        cliTitle: '终端 CLI 一行命令生成 2FA',
+        cliDesc: '不打开网页也能算：复制任意一条到终端即可。',
+        cliOathTitle: 'macOS / Linux (oathtool)',
+        cliPyTitle: 'Python 3 零依赖一行流',
+        cliAliasTitle: 'Shell 快捷键别名 (zsh / bash)',
+        toastHeadersCopied: '✅ 已复制 _headers 配置',
+        toastCmdCopied: '✅ 已复制命令',
+        drawerTitle: '快捷键速查与工具导航',
+        drawerExpand: '点击展开 ▾',
+        scPaste: 'Ctrl+V 任意处盲粘密钥/截图',
+        scEnter: 'Ctrl+C 智能复制 (≤4s顺延)',
+        scSlash: '/ 聚焦输入',
+        scAlt: 'Alt + 1~6 切换工具',
+        scEsc: 'Esc 一键焚毁内存',
+        scBatchDemo: '▶ 体验批量账密清洗',
+        scRolloverDemo: '≤4s 顺延演示',
+        scToQr: '转为手机扫码二维码',
+        seoTotpTitle: '/ 批量 2FA 计算',
+        seoTotpDesc: '支持 ---- 与 CSV 清洗',
+        seoMigrationDesc: 'Google 导出码提取密钥',
+        seoQrDesc: 'Base32 转手机扫码图',
+        seoSteamDesc: 'Steam 5位令牌计算',
+        seoCliDesc: '终端脚本与零网络验证',
+        guidesLabel: '深入阅读：',
+        adFallback: '底部自适应展示广告位',
+        adHide: '隐藏 ✕',
+        metaDescription: '2fa.pub 是纯本地 2FA/TOTP 验证码在线计算器：Ctrl+V 粘贴密钥或二维码截图秒出码、≤4 秒防过期顺延复制、多行账密批量清洗、Google Authenticator 导出码解析、Steam 令牌计算。密钥零外发，100% 浏览器本地运算。',
+        migrationMetaDesc: '在线解码 Google Authenticator 导出二维码 (otpauth-migration://)，纯浏览器本地提取 Base32 密钥，支持上传截图与一键导入计算验证码，密钥零外发。',
+        qrGenMetaDesc: '纯本地 2FA/TOTP 二维码在线生成器：将 Base32 密钥快速转换为标准 otpauth:// 手机扫码二维码图片并支持下载 PNG，全程浏览器本地生成。',
+        steamMetaDesc: '纯本地 Steam Guard 令牌在线计算器：支持粘贴 Base64 shared_secret、maFile JSON 或 Base32 密钥秒出 5 位 Steam 验证码，支持 ≤4 秒自动顺延复制。',
+        vaultMetaDesc: '纯前端零信任 2FA 加密保险箱：基于 Web Crypto PBKDF2 (100,000 次迭代) 与 AES-256-GCM 在浏览器本地加密存储多账号 2FA 密钥。',
+        cliMetaDesc: '终端 CLI 一行命令生成 2FA 验证码（oathtool / Python 3 零依赖脚本）与 2fa.pub 实时浏览器运行期安全审计面板。',
+        navAriaLabel: '主导航',
+        langSwitchTip: '切换语言 (中文 / English / 日本語)',
+        seoVaultDesc: 'AES-256-GCM 本地加密柜',
+        guideLinkExportText: 'Google Authenticator 导出码解析指南',
+        guideLinkSteamText: 'Steam 令牌在线计算',
+        guideLinkQrText: '2FA 二维码生成器',
+        headerCopyLabel: '智能复制',
+        headerCopyTip: '未选中文本时按 Ctrl+C 直接复制验证码（剩余 ≤4s 自动顺延下一期）',
+        trustCopy: '智能复制 (≤4s顺延)',
+        trustComboTip: '左手闭环：Ctrl+V 粘贴即出码，Ctrl+C 随时复制最新验证码（划词时不影响普通复制）',
+        toolbarSmartCopyBtn: '智能复制验证码 (≤4s顺延)'
+      },
+      ja: {
+        pageTitle: '2FA/TOTP 認証コード計算ツール - 完全ローカル・秒速生成 | 2fa.pub',
+        zeroTrustBadge: '完全ローカル計算',
+        shortcutHint: 'Ctrl+V 貼付 · Ctrl+C 即コピー',
+        burnBtn: 'メモリ消去 (Esc)',
+        burnTip: 'Esc で消去',
+        heroSubtitle: 'ゼロトラスト・クライアントサイド 2FA ツール',
+        h1Title: '最小・完全ローカルの 2FA / TOTP 認証コード計算ツール',
+        navTotp: '認証コード',
+        navMigration: 'Google抽出',
+        navQrGen: 'QRコード',
+        navSteam: 'Steam',
+        navVault: '保管庫',
+        navCli: 'CLI・監査',
+        headerPasteLabel: 'どこでも貼付',
+        headerPasteTip: 'ページのどこでも Ctrl+V を押してシークレットやQRスクショを貼り付けると即座にコードを生成します',
+        trustLocal: '100% ローカル計算・シークレット送信なし',
+        trustLocalTip: 'ライブ監査を開く：実行時の外部リクエスト数と暗号コアの検証を確認',
+        trustPaste: 'どこでも貼付',
+        trustAudit: 'F12 で監査可能',
+        trustAuditTip: 'F12 で開発者ツールを開き、暗号コアを行単位で監査できます',
+        inputCabinTitle: 'シークレット / 一括データ / QRスクショを貼付',
+        scanQrBtn: 'QR画像を読み取る',
+        hashBookmarkBtn: '#Hash ブックマークリンク',
+        saveToVaultBtn: '保管庫に保存',
+        badgeIdle: 'シークレットを貼り付けてください',
+        badgeSingle: '単一シークレット',
+        badgeMultiPrefix: '検出：',
+        badgeMultiSuffix: ' 件のアカウント',
+        sampleSingle: 'サンプル',
+        sampleBatch: '一括サンプル',
+        inputPlaceholder: 'Base32 シークレット（例: JBSWY3DPEHPK3PXP）、複数行データ（アカウント----パスワード----シークレット）、または Ctrl+V でQRスクショを貼り付け...',
+        advancedParams: '詳細設定 (30秒 / 6桁 / SHA-1) ▾',
+        periodLabel: '周期',
+        digitsLabel: '桁数',
+        algoLabel: 'アルゴリズム',
+        listTitle: 'アカウント一覧（Ctrl+C で先頭コピー・行クリックで直接コピー）',
+        unitAccounts: ' 件',
+        unitAccountOne: ' 件',
+        filterPlaceholder: 'アカウントを絞り込み...',
+        copyAllBtn: '全コードをコピー',
+        autoAdvanceLabel: 'コピー後に次の行へ',
+        autoAdvanceTip: 'オンにすると、行クリックや Ctrl+C でコードをコピーした後、自動的に次の行（ハイライト表示）を選択し、Ctrl+C で連続コピーできます',
+        exportCsvBtn: '整形済みCSVを出力',
+        thAccount: 'アカウント / メモ',
+        thSecret: 'シークレット',
+        thCurrent: '現在のコード',
+        thNext: '次 (+30秒)',
+        thRemaining: '残り',
+        thActions: '操作',
+        emptyCtaTitle: 'ゼロクリック操作：どこでも Ctrl+V で即座に解析、いつでも Ctrl+C で最新コードをコピー（≤4秒自動ロールオーバー）',
+        emptyCtaSub: '入力欄の選択不要・文字選択時は通常の Ctrl+C コピーとして動作・クリックで手動入力',
+        btnCopy: 'コピー',
+        btnRollover: '⚡ ロールオーバー',
+        defaultSecretLabel: 'シークレット #',
+        accountLabel: 'アカウント #',
+        toastNeedSecret: '有効な 2FA シークレットを先に貼り付けてください',
+        toastCopied: '✅ コードをコピーしました: ',
+        toastCopiedRollover: '⚡ 残り≤4秒 — 次周期のコードを自動コピー: ',
+        toastCopiedNext: '⏭️ 次周期のコードをコピー: ',
+        toastRowCopied: 'コピー: ',
+        toastRowRollover: '次周期コードをコピー: ',
+        toastBatchCopied1: '✅ ',
+        toastBatchCopied2: ' 件のコードをコピーしました',
+        toastOneCodeCopied: '✅ 1 件のコードをコピーしました',
+        toastCsvExported: '📥 CSVを出力しました',
+        toastSampleSingle: 'サンプルシークレットを入力しました',
+        toastSampleBatch: '整形用サンプル 4 件を入力し自動解析しました',
+        toastNeedSecretShort: '先にシークレットを入力してください',
+        toastHashCopied: '🔖 #Hash ブックマークリンクをコピーしました — 保存しておくとワンクリックで使えます',
+        toastBurned: '🔥 メモリデータを消去しました',
+        toastQrFailed: 'QRコードを認識できませんでした',
+        toastQrNotReady: 'QRエンジンの準備ができていません',
+        migrationTitle: 'Google Authenticator エクスポート抽出',
+        migrationDesc1: '',
+        migrationDesc2: ' リンクを貼り付けるか、エクスポートQR画像をアップロードするとローカルで Base32 シークレットを抽出します。',
+        migrationDemoBtn: 'デモ移行コードを読み込む',
+        migrationUploadBtn: 'QR画像をアップロード',
+        migrationParseBtn: 'デコード',
+        migrationSendBtn: '計算機へ送る',
+        thIssuer: '発行者',
+        thAccountName: 'アカウント名',
+        thExtracted: '抽出された Base32 シークレット',
+        thParams: 'パラメータ',
+        migrationEmpty: 'リンクを貼り付けるか、上のデモボタンをクリックしてください',
+        migrationFail: 'デコード失敗 — リンク形式を確認してください',
+        btnCopySecret: 'シークレットをコピー',
+        digitsUnit: '桁',
+        toastMigrationDecoded: '📦 Google移行QRを解析しました',
+        toastBatchExtracted1: '⚡ 解析して ',
+        toastBatchExtracted2: ' 件のアカウントを抽出しました',
+        toastSecretCopied: '✅ シークレットをコピー: ',
+        toastImported: '🚀 計算機にインポートしました',
+        qrGenTitle: '2FA QRコード生成',
+        qrSecretLabel: 'Base32 シークレット *',
+        qrIssuerLabel: '発行者 (Issuer)',
+        qrAccountLabel: 'アカウント名 (Account)',
+        qrPeriodLabel: '周期 (秒)',
+        qrDigitsLabel: '桁数',
+        qrCopyLink: 'リンクをコピー',
+        qrDownload: 'PNG QRコードをダウンロード',
+        toastLinkCopied: '✅ リンクをコピーしました',
+        steamTitle: 'Steam Guard トークン計算ツール',
+        steamDesc1: 'Base64 ',
+        steamDesc2: '、maFile JSON、Base32 シークレットに対応。',
+        steamDemoBtn: 'デモシークレットを入力',
+        steamPlaceholder: 'shared_secret (Base64)、maFile JSON、Base32 シークレットを貼り付け...',
+        steamIdle: '入力待ち',
+        steamHintMaFile: '認識：maFile JSON (',
+        steamHintB32: '認識：Base32 シークレット',
+        steamHintB64: '認識：Base64 shared_secret',
+        steamCurrent: '現在の Steam トークン',
+        steamRemaining: '残り ',
+        steamCopyBtn: 'Ctrl+C またはクリックで Steam トークンをコピー（≤4秒自動ロールオーバー）',
+        toastSteamCopied: '🎮 Steamトークンをコピー: ',
+        vaultTitle: '暗号化保管庫 (AES-256-GCM)',
+        vaultDesc: 'マスターパスワードから PBKDF2（100,000 回反復）で鍵を導出し、ブラウザのローカルストレージに暗号化保存します。',
+        vaultChecking: '確認中...',
+        vaultBadgeSaved: '🔒 暗号化アーカイブ済み',
+        vaultBadgeMemory: '🛡️ メモリのみ・痕跡なし',
+        vaultPreviewMemory: 'この環境はメモリ上のみで動作しています。',
+        vaultPreviewClean: 'ディスクには何も保存されていません（ページを閉じると消去）。',
+        vaultPasswordPlaceholder: 'マスターパスワードを入力...',
+        vaultSaveBtn: '🔒 現在のデータを暗号化保存',
+        vaultLoadBtn: '🔓 復号して読み込む',
+        vaultWipeBtn: '🗑️ 暗号文を破棄',
+        toastVaultNeedInput: 'マスターパスワードを入力し、計算機にデータがあることを確認してください',
+        toastVaultSaved: '🔒 暗号化して保存しました',
+        toastVaultSaveFail: '保存に失敗しました',
+        toastVaultLoaded: '🔓 復号に成功しました',
+        toastVaultWrongPass: '❌ パスワードが違います',
+        toastVaultWiped: '🗑️ ローカルの暗号文を破棄しました',
+        auditTitle: 'ライブセキュリティ監査',
+        auditDesc: '以下のデータはこのページの実行時に実測したものです。ご自身で再確認できます。',
+        auditRefresh: '監査を更新',
+        auditCrypto: 'Web Crypto エンジン',
+        auditCryptoOk: '✅ 有効',
+        auditCryptoBad: '❌ 利用不可',
+        auditRequests: '実行時の外部リクエスト',
+        auditReqUnit: ' 件・シークレットは含まれません',
+        auditHash: '#Hash アンカー分離',
+        auditHashOk: '✅ HTTPで送信されない',
+        auditSanitize: 'サニタイズ済み解析',
+        auditSanitizeOk: '✅ 有効',
+        auditCore: 'ホワイトボックスコア SHA-256',
+        auditDomain: 'ドメインロック',
+        auditDomainOk: '✅ 有効',
+        auditDomainBad: '⚠️ 非認可ミラー',
+        cspSummary: 'セキュリティレスポンスヘッダ設定',
+        copyBtn: 'コピー',
+        expandHint: '展開 ▾',
+        cliTitle: 'CLI ワンライナーで 2FA 生成',
+        cliDesc: 'サイトを開かずに計算：好きなスニペットをターミナルに貼り付けるだけ。',
+        cliOathTitle: 'macOS / Linux (oathtool)',
+        cliPyTitle: 'Python 3 依存なしワンライナー',
+        cliAliasTitle: 'Shell エイリアス (zsh / bash)',
+        toastHeadersCopied: '✅ _headers 設定をコピーしました',
+        toastCmdCopied: '✅ コマンドをコピーしました',
+        drawerTitle: 'ショートカットとツールナビ',
+        drawerExpand: 'クリックで展開 ▾',
+        scPaste: 'Ctrl+V どこでも貼付',
+        scEnter: 'Ctrl+C スマートコピー（≤4秒ロールオーバー）',
+        scSlash: '/ 入力へフォーカス',
+        scAlt: 'Alt + 1〜6 ツール切替',
+        scEsc: 'Esc メモリ消去',
+        scBatchDemo: '▶ 一括整形を試す',
+        scRolloverDemo: '≤4秒ロールオーバーデモ',
+        scToQr: 'スマホ用QRに変換',
+        seoTotpTitle: '/ 一括 2FA 計算',
+        seoTotpDesc: '---- と CSV に対応',
+        seoMigrationDesc: 'Googleエクスポートから抽出',
+        seoQrDesc: 'Base32 を読取用QRに',
+        seoSteamDesc: 'Steam 5桁トークン',
+        seoCliDesc: 'CLIスクリプトとゼロネットワーク実証',
+        guidesLabel: '関連ガイド：',
+        adFallback: '下部レスポンシブ広告スロット',
+        adHide: '非表示 ✕',
+        metaDescription: '2fa.pub は完全ローカルの 2FA/TOTP 認証コード計算ツールです。Ctrl+V でシークレットやQRスクショから即座にコード生成、残り4秒以下の自動ロールオーバー、複数行データの一括整形、Google Authenticator 移行QR解析、Steam Guard 計算に対応。シークレットは外部送信されません。',
+        migrationMetaDesc: 'Google Authenticator のエクスポートQRコード (otpauth-migration://) をブラウザ内でローカル解析し、Base32 シークレットを抽出する無料オンラインツール。アップロード一切なし。',
+        qrGenMetaDesc: 'Base32 シークレットからスマホ認証アプリで読み取れる標準 otpauth:// QRコードをブラウザ内でローカル生成・PNG保存できる無料ツール。',
+        steamMetaDesc: 'Steam Guard 5桁トークンをブラウザ内でローカル計算。Base64 shared_secret、maFile JSON、Base32 シークレットに対応し、残り4秒以下の自動ロールオーバー機能付き。',
+        vaultMetaDesc: 'PBKDF2 (100,000回反復) と AES-256-GCM を用い、ブラウザのローカルストレージに 2FA シークレットを暗号化保存するゼロトラスト保管庫。',
+        cliMetaDesc: 'ターミナル1行で 2FA コードを生成する CLI スニペット (oathtool / Python 3) と、実行時の通信・Web Crypto 監査パネル。',
+        navAriaLabel: 'メインナビゲーション',
+        langSwitchTip: '言語を切り替え (日本語 / 中文 / English)',
+        seoVaultDesc: 'AES-256-GCM ローカル保管庫',
+        guideLinkExportText: 'Google Authenticator エクスポート解析ガイド',
+        guideLinkSteamText: 'Steam トークンオンライン計算',
+        guideLinkQrText: '2FA QRコード生成ツール',
+        headerCopyLabel: 'スマートコピー',
+        headerCopyTip: 'テキスト未選択時に Ctrl+C で認証コードを即コピー（残り≤4秒で次周期へ自動ロールオーバー）',
+        trustCopy: '即コピー (≤4秒自動延長)',
+        trustComboTip: '左手完結：Ctrl+V で即座にコード生成、Ctrl+C でいつでも最新コードをコピー（文字選択時は通常コピー）',
+        toolbarSmartCopyBtn: 'コードをスマートコピー (≤4秒延長)'
+      },
+      en: {
+        pageTitle: 'Free 2FA/TOTP Code Calculator Online - 100% Local, No Uploads | 2fa.pub',
+        zeroTrustBadge: '100% Local',
+        shortcutHint: 'Ctrl+V Paste · Ctrl+C Copy',
+        burnBtn: 'Burn Memory (Esc)',
+        burnTip: 'Press Esc to wipe',
+        heroSubtitle: 'Zero-Trust Client-Side 2FA Utility',
+        h1Title: 'Minimal, 100% Local 2FA / TOTP Code Calculator',
+        navTotp: 'Codes',
+        navMigration: 'Google Extract',
+        navQrGen: 'QR Code',
+        navSteam: 'Steam',
+        navVault: 'Vault',
+        navCli: 'CLI · Audit',
+        headerPasteLabel: 'Blind paste',
+        headerPasteTip: 'Press Ctrl+V anywhere to paste a secret or QR screenshot and get codes instantly',
+        trustLocal: '100% local · secrets never leave',
+        trustLocalTip: 'Open the live audit: runtime outbound requests & crypto-core checksum',
+        trustPaste: 'Blind paste',
+        trustAudit: 'F12 auditable',
+        trustAuditTip: 'Open DevTools with F12 to audit the crypto core line by line',
+        inputCabinTitle: 'Paste secret / batch lines / QR screenshot',
+        scanQrBtn: 'Scan QR Image',
+        hashBookmarkBtn: '#Hash Bookmark',
+        saveToVaultBtn: 'Save to Vault',
+        badgeIdle: 'Waiting for paste',
+        badgeSingle: 'Single secret',
+        badgeMultiSuffix: ' accounts',
+        badgeMultiPrefix: 'Detected ',
+        sampleSingle: 'Sample',
+        sampleBatch: 'Batch demo',
+        inputPlaceholder: 'Paste a Base32 secret (e.g. JBSWY3DPEHPK3PXP), batch lines (account----password----secret), or press Ctrl+V to paste a QR screenshot...',
+        advancedParams: 'Advanced (30s / 6 digits / SHA-1) ▾',
+        periodLabel: 'Period',
+        digitsLabel: 'Digits',
+        algoLabel: 'Algorithm',
+        listTitle: 'Accounts (press Ctrl+C for primary · click any row to copy)',
+        unitAccounts: ' accounts',
+        unitAccountOne: ' account',
+        toastOneCodeCopied: '✅ 1 code copied',
+        filterPlaceholder: 'Filter accounts...',
+        copyAllBtn: 'Copy all codes',
+        autoAdvanceLabel: 'Advance to next row after copy',
+        autoAdvanceTip: 'When enabled: after a row click or Ctrl+C copies the current account code, the next row is highlighted automatically so Ctrl+C keeps copying the following account',
+        exportCsvBtn: 'Export cleaned CSV',
+        thAccount: 'Account / Note',
+        thSecret: 'Secret',
+        thCurrent: 'Current code',
+        thNext: 'Next (+30s)',
+        thRemaining: 'Left',
+        thActions: 'Action',
+        emptyCtaTitle: 'Zero-click workflow: press Ctrl+V anywhere to decode instantly, press Ctrl+C anytime to copy the live code (≤4s smart rollover)',
+        emptyCtaSub: 'No input focus needed · Normal text selection Ctrl+C works as usual · Click here to type manually',
+        btnCopy: 'Copy',
+        btnRollover: '⚡ Rollover',
+        defaultSecretLabel: 'Secret #',
+        accountLabel: 'Account #',
+        toastNeedSecret: 'Paste a valid 2FA secret first',
+        toastCopied: '✅ Code copied: ',
+        toastCopiedRollover: '⚡ ≤4s left — next-period code copied: ',
+        toastCopiedNext: '⏭️ Next-period code copied: ',
+        toastRowCopied: 'copied: ',
+        toastRowRollover: 'next-period code copied: ',
+        toastBatchCopied1: '✅ Copied ',
+        toastBatchCopied2: ' codes',
+        toastCsvExported: '📥 CSV exported',
+        toastSampleSingle: 'Single-secret sample loaded',
+        toastSampleBatch: '4 messy studio lines loaded & parsed',
+        toastNeedSecretShort: 'Enter a secret first',
+        toastHashCopied: '🔖 #Hash bookmark link copied — save it for one-click access',
+        toastBurned: '🔥 Memory wiped',
+        toastQrFailed: 'No QR code recognized',
+        toastQrNotReady: 'QR engine not ready',
+        migrationTitle: 'Google Authenticator Export Extractor',
+        migrationDesc1: 'Paste an ',
+        migrationDesc2: ' link or upload the exported QR screenshot to extract Base32 secrets locally.',
+        migrationDemoBtn: 'Load demo payload',
+        migrationUploadBtn: 'Upload QR image',
+        migrationParseBtn: 'Decode',
+        migrationSendBtn: 'Send to calculator',
+        thIssuer: 'Issuer',
+        thAccountName: 'Account',
+        thExtracted: 'Extracted Base32 secret',
+        thParams: 'Params',
+        migrationEmpty: 'Paste a link or click the demo button above',
+        migrationFail: 'Decode failed — check the link format',
+        btnCopySecret: 'Copy secret',
+        digitsUnit: 'd',
+        toastMigrationDecoded: '📦 Google migration QR decoded',
+        toastBatchExtracted1: '⚡ Parsed ',
+        toastBatchExtracted2: ' accounts',
+        toastSecretCopied: '✅ Secret copied: ',
+        toastImported: '🚀 Imported into calculator',
+        qrGenTitle: '2FA QR Generator',
+        qrSecretLabel: 'Base32 secret *',
+        qrIssuerLabel: 'Issuer',
+        qrAccountLabel: 'Account name',
+        qrPeriodLabel: 'Period (s)',
+        qrDigitsLabel: 'Digits',
+        qrCopyLink: 'Copy link',
+        qrDownload: 'Download PNG',
+        toastLinkCopied: '✅ Link copied',
+        steamTitle: 'Steam Guard Token Calculator',
+        steamDesc1: 'Supports Base64 ',
+        steamDesc2: ', maFile JSON or Base32 secret.',
+        steamDemoBtn: 'Load demo secret',
+        steamPlaceholder: 'Paste shared_secret (Base64), maFile JSON or Base32 secret...',
+        steamIdle: 'Waiting for input',
+        steamHintMaFile: 'Recognized: maFile JSON (',
+        steamHintB32: 'Recognized: Base32 secret',
+        steamHintB64: 'Recognized: Base64 shared_secret',
+        steamCurrent: 'Current Steam token',
+        steamRemaining: 'Left ',
+        steamCopyBtn: 'Press Ctrl+C or click to copy Steam token (≤4s auto-rollover)',
+        toastSteamCopied: '🎮 Steam token copied: ',
+        vaultTitle: 'Encrypted Vault (AES-256-GCM)',
+        vaultDesc: 'Derives a key from your master password via PBKDF2 (100,000 iterations) and stores data encrypted in browser-local storage.',
+        vaultChecking: 'Checking...',
+        vaultBadgeSaved: '🔒 Encrypted archive on disk',
+        vaultBadgeMemory: '🛡️ In-memory, zero-trace mode',
+        vaultPreviewMemory: 'This environment runs in memory only.',
+        vaultPreviewClean: 'Nothing stored on disk yet (wiped when the page closes).',
+        vaultPasswordPlaceholder: 'Enter master password...',
+        vaultSaveBtn: '🔒 Encrypt & save current data',
+        vaultLoadBtn: '🔓 Decrypt & load',
+        vaultWipeBtn: '🗑️ Destroy ciphertext',
+        toastVaultNeedInput: 'Enter the master password and make sure the calculator has data',
+        toastVaultSaved: '🔒 Encrypted & saved',
+        toastVaultSaveFail: 'Save failed',
+        toastVaultLoaded: '🔓 Decrypted & loaded',
+        toastVaultWrongPass: '❌ Wrong password',
+        toastVaultWiped: '🗑️ Local ciphertext destroyed',
+        auditTitle: 'Live Security Audit',
+        auditDesc: 'Measured live on this page — verify it yourself anytime.',
+        auditRefresh: 'Refresh audit',
+        auditCrypto: 'Web Crypto engine',
+        auditCryptoOk: '✅ Enabled',
+        auditCryptoBad: '❌ Unavailable',
+        auditRequests: 'Runtime outbound requests',
+        auditReqUnit: ' sent · none contain secrets',
+        auditHash: '#Hash anchor isolation',
+        auditHashOk: '✅ Never sent over HTTP',
+        auditSanitize: 'Sanitized analytics',
+        auditSanitizeOk: '✅ Active',
+        auditCore: 'White-box core SHA-256',
+        auditDomain: 'Domain lock & sanitize',
+        auditDomainOk: '✅ Active',
+        auditDomainBad: '⚠️ Unauthorized mirror',
+        cspSummary: 'security response headers',
+        copyBtn: 'Copy',
+        expandHint: 'Expand ▾',
+        cliTitle: 'One-line CLI 2FA generation',
+        cliDesc: 'Compute without the site: copy any snippet into your terminal.',
+        cliOathTitle: 'macOS / Linux (oathtool)',
+        cliPyTitle: 'Python 3 zero-dependency one-liner',
+        cliAliasTitle: 'Shell alias (zsh / bash)',
+        toastHeadersCopied: '✅ _headers config copied',
+        toastCmdCopied: '✅ Command copied',
+        drawerTitle: 'Shortcuts & tool navigation',
+        drawerExpand: 'Click to expand ▾',
+        scPaste: 'Ctrl+V blind paste anywhere',
+        scEnter: 'Ctrl+C smart copy (≤4s rollover)',
+        scSlash: '/ focus input',
+        scAlt: 'Alt + 1~6 switch tools',
+        scEsc: 'Esc wipe memory',
+        scBatchDemo: '▶ Try batch cleaning',
+        scRolloverDemo: '≤4s rollover demo',
+        scToQr: 'Convert to QR for phone',
+        seoTotpTitle: '/ Batch 2FA calc',
+        seoTotpDesc: '---- & CSV parsing',
+        seoMigrationDesc: 'Extract secrets from exports',
+        seoQrDesc: 'Base32 to scannable QR',
+        seoSteamDesc: 'Steam 5-char tokens',
+        seoCliDesc: 'CLI scripts & zero-network proof',
+        guidesLabel: 'Guides:',
+        adFallback: 'Bottom responsive ad slot',
+        adHide: 'Hide ✕',
+        metaDescription: '2fa.pub is a 100% client-side 2FA/TOTP code calculator: press Ctrl+V anywhere to decode secrets or QR screenshots instantly, with <=4s smart rollover copy, batch account cleaning, Google Authenticator export decoding, and Steam Guard tokens. Zero uploads.',
+        migrationMetaDesc: 'Decode Google Authenticator export QR codes (otpauth-migration://) and extract plaintext Base32 secrets 100% locally in your browser. Zero uploads.',
+        qrGenMetaDesc: 'Generate standard otpauth:// 2FA QR codes from Base32 secrets 100% locally in your browser and download scannable PNG images for any authenticator app.',
+        steamMetaDesc: 'Calculate 5-character Steam Guard tokens 100% locally in your browser from Base64 shared_secret, maFile JSON, or Base32 secrets with <=4s smart rollover.',
+        vaultMetaDesc: 'Encrypt and store your 2FA secrets locally in the browser using Web Crypto PBKDF2 (100,000 iterations) and AES-256-GCM zero-trust encryption.',
+        cliMetaDesc: 'One-line terminal CLI snippets (oathtool & zero-dependency Python 3) for 2FA generation and live client-side Web Crypto security audit.',
+        navAriaLabel: 'Main navigation',
+        langSwitchTip: 'Switch language (English / 日本語 / 中文)',
+        seoVaultDesc: 'AES-256-GCM local vault',
+        guideLinkExportText: 'Google Authenticator Export Decoder Guide',
+        guideLinkSteamText: 'Steam Guard Token Calculator',
+        guideLinkQrText: '2FA QR Code Generator',
+        headerCopyLabel: 'Smart copy',
+        headerCopyTip: 'Press Ctrl+C anytime (when no text is selected) to copy the live 2FA code with <=4s smart rollover',
+        trustCopy: 'Smart copy (≤4s rollover)',
+        trustComboTip: 'Left-hand loop: Ctrl+V anywhere to decode, Ctrl+C anytime to copy the live code (normal text selection Ctrl+C still works)',
+        toolbarSmartCopyBtn: 'Smart copy code (≤4s rollover)'
+      }
+    };
+
+    function _t(key) {
+      const d = I18N[currentLang] || I18N.en;
+      return d[key] !== undefined ? d[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
+    }
+
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const el = document.createElement('div');
+      const borderClass = type === 'warn'
+        ? 'border-amber-500/50 bg-zinc-900/95 text-amber-300'
+        : type === 'error'
+        ? 'border-red-500/50 bg-zinc-900/95 text-red-300'
+        : 'border-emerald-500/50 bg-zinc-900/95 text-emerald-300';
+      el.className = 'pointer-events-auto px-4 py-2.5 rounded-xl border shadow-2xl text-xs font-mono-tabular flex items-center justify-between gap-3 transition-all duration-300 ' + borderClass;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(function() {
+        el.style.opacity = '0';
+        setTimeout(function() {
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }, 250);
+      }, 2400);
+    }
+
+    async function copyTextToClipboard(text) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (e) {}
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // =========================================================================
+    // 2. MODULE 1: NATIVE WEB CRYPTO TOTP & DUAL-PERIOD ENGINE (RFC 6238)
+    // =========================================================================
+    function base32ToBytes(base32) {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+      const cleaned = (base32 || '').toUpperCase().replace(/[^A-Z2-7]/g, '');
+      let bits = 0;
+      let value = 0;
+      let index = 0;
+      const output = new Uint8Array(Math.floor((cleaned.length * 5) / 8));
+
+      for (let i = 0; i < cleaned.length; i++) {
+        value = (value << 5) | alphabet.indexOf(cleaned[i]);
+        bits += 5;
+        if (bits >= 8) {
+          output[index++] = (value >>> (bits - 8)) & 255;
+          bits -= 8;
+        }
+      }
+      return output;
+    }
+
+    function bytesToBase32(bytes) {
+      const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+      let bits = 0;
+      let value = 0;
+      let output = '';
+      for (let i = 0; i < bytes.length; i++) {
+        value = (value << 8) | bytes[i];
+        bits += 8;
+        while (bits >= 5) {
+          output += alphabet[(value >>> (bits - 5)) & 31];
+          bits -= 5;
+        }
+      }
+      if (bits > 0) {
+        output += alphabet[(value << (5 - bits)) & 31];
+      }
+      return output;
+    }
+
+    async function generateTOTP(secret, period, digits, algorithm, timestamp) {
+      period = period || 30;
+      digits = digits || 6;
+      algorithm = algorithm || 'SHA-1';
+      timestamp = typeof timestamp === 'number' ? timestamp : Date.now();
+
+      const keyBytes = base32ToBytes(secret);
+      if (keyBytes.length === 0) {
+        return ''.padStart(digits, '-');
+      }
+      const counter = Math.floor(timestamp / 1000 / period);
+      const counterBuffer = new ArrayBuffer(8);
+      const view = new DataView(counterBuffer);
+      view.setUint32(0, Math.floor(counter / 0x100000000), false);
+      view.setUint32(4, counter & 0xffffffff, false);
+
+      const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        keyBytes,
+        { name: 'HMAC', hash: { name: algorithm } },
+        false,
+        ['sign']
+      );
+
+      const signature = new Uint8Array(await crypto.subtle.sign('HMAC', cryptoKey, counterBuffer));
+      const offset = signature[signature.length - 1] & 0x0f;
+      const binary =
+        ((signature[offset] & 0x7f) << 24) |
+        ((signature[offset + 1] & 0xff) << 16) |
+        ((signature[offset + 2] & 0xff) << 8) |
+        (signature[offset + 3] & 0xff);
+
+      const otp = binary % Math.pow(10, digits);
+      return otp.toString().padStart(digits, '0');
+    }
+
+    async function getDualTOTP(secret, period, digits, algorithm) {
+      period = Number(period) || 30;
+      digits = Number(digits) || 6;
+      algorithm = algorithm || 'SHA-1';
+      const now = Date.now();
+      let remaining = period - (Math.floor(now / 1000) % period);
+      if (simulatedRolloverUntil > now) {
+        remaining = Math.min(remaining, Math.max(1, Math.ceil((simulatedRolloverUntil - now) / 1000)));
+      }
+      const currentCode = await generateTOTP(secret, period, digits, algorithm, now);
+      const nextCode = await generateTOTP(secret, period, digits, algorithm, now + period * 1000);
+      const shouldUseNext = remaining <= 4;
+      return { currentCode, nextCode, remaining, shouldUseNext };
+    }
+
+    function formatGroupedCodeHtml(code, secondClass) {
+      const str = String(code || '------');
+      const half = Math.ceil(str.length / 2);
+      const left = str.slice(0, half);
+      const right = str.slice(half);
+      const gap = secondClass || 'ml-3';
+      return '<span>' + left + '</span><span class="' + gap + '">' + right + '</span>';
+    }
+
+    // =========================================================================
+    // 3. MODULE 2: BATCH MESSY TEXT REGEX PARSER
+    // =========================================================================
+    function normalizeOtpAlgo(rawAlgo) {
+      const upper = String(rawAlgo || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (upper === 'SHA256') return 'SHA-256';
+      if (upper === 'SHA512') return 'SHA-512';
+      if (upper === 'SHA1') return 'SHA-1';
+      return null;
+    }
+
+    function parseBatchInput(text) {
+      const lines = (text || '').split(/\r?\n/).map(function(l) { return l.trim(); }).filter(Boolean);
+      const results = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (line.toLowerCase().includes('otpauth://')) {
+          try {
+            const startIdx = line.toLowerCase().indexOf('otpauth://');
+            const url = new URL(line.substring(startIdx));
+            const secret = url.searchParams.get('secret');
+            const issuer = url.searchParams.get('issuer');
+            const rawDigits = Number(url.searchParams.get('digits'));
+            const rawPeriod = Number(url.searchParams.get('period'));
+            const rawAlgo = normalizeOtpAlgo(url.searchParams.get('algorithm'));
+            let label = decodeURIComponent(url.pathname.replace(/^\/\/totp\/|^\/+/, ''));
+            if (issuer && !label.includes(issuer)) {
+              label = issuer + ' (' + label + ')';
+            }
+            if (secret) {
+              const cleanedSecret = secret.replace(/\s+/g, '').toUpperCase().replace(/[^A-Z2-7]/g, '');
+              if (cleanedSecret.length >= 8) {
+                results.push({
+                  id: 'row-' + i,
+                  rawLine: line,
+                  label: label || (_t('accountLabel') + (i + 1)),
+                  secret: cleanedSecret,
+                  digits: (rawDigits === 6 || rawDigits === 8) ? rawDigits : null,
+                  period: (rawPeriod > 0) ? rawPeriod : null,
+                  algorithm: rawAlgo
+                });
+                continue;
+              }
+            }
+          } catch (e) {}
+        }
+
+        const compactLine = line.replace(/[\s-]+/g, '').toUpperCase();
+        if (/^[A-Z2-7]{12,64}=*$/.test(compactLine) && !line.includes('----') && !line.includes(',') && !line.includes('|') && !line.includes(':')) {
+          results.push({
+            id: 'row-' + i,
+            rawLine: line,
+            label: _t('defaultSecretLabel') + (i + 1),
+            secret: compactLine.replace(/=+$/, ''),
+            digits: null,
+            period: null,
+            algorithm: null
+          });
+          continue;
+        }
+
+        let parts = line.split(/(?:----+|[|,;\t]|\s{2,})/).map(function(p) { return p.trim(); }).filter(Boolean);
+        if (parts.length < 2) {
+          parts = line.split(/[:\s]+/).map(function(p) { return p.trim(); }).filter(Boolean);
+        }
+
+        let matchedSecret = '';
+        let secretIndex = -1;
+
+        for (let j = parts.length - 1; j >= 0; j--) {
+          const candidate = parts[j].replace(/\s+/g, '').toUpperCase();
+          if (/^[A-Z2-7]{12,64}=*$/.test(candidate)) {
+            matchedSecret = candidate.replace(/=+$/, '');
+            secretIndex = j;
+            break;
+          }
+        }
+
+        if (matchedSecret) {
+          const labelParts = parts.filter(function(_, idx) { return idx !== secretIndex; });
+          const label = labelParts.length > 0 ? labelParts.slice(0, 2).join(' · ') : (_t('accountLabel') + (i + 1));
+          results.push({
+            id: 'row-' + i,
+            rawLine: line,
+            label: label,
+            secret: matchedSecret,
+            digits: null,
+            period: null,
+            algorithm: null
+          });
+        }
+      }
+      return results;
+    }
+
+    // =========================================================================
+    // 4. UI RENDERING & SMART ROLLOVER LOOP
+    // =========================================================================
+    function getTotpSettings() {
+      const period = Number(document.getElementById('selectPeriod').value) || 30;
+      const digits = Number(document.getElementById('selectDigits').value) || 6;
+      const algorithm = document.getElementById('selectAlgorithm').value || 'SHA-1';
+      return { period, digits, algorithm };
+    }
+
+    async function handleOmniInput() {
+      const raw = document.getElementById('omniInputTextarea').value;
+      parsedAccounts = parseBatchInput(raw);
+      const badge = document.getElementById('detectedModeBadge');
+      if (parsedAccounts.length > 1) {
+        badge.textContent = _t('badgeMultiPrefix') + parsedAccounts.length + _t('badgeMultiSuffix');
+        badge.className = 'whitespace-nowrap text-[11px] font-mono-tabular px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-300';
+      } else if (parsedAccounts.length === 1) {
+        badge.textContent = _t('badgeSingle');
+        badge.className = 'whitespace-nowrap text-[11px] font-mono-tabular px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-300';
+      } else {
+        badge.textContent = _t('badgeIdle');
+        badge.className = 'whitespace-nowrap text-[11px] font-mono-tabular px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-500';
+      }
+      await refreshAllCodes();
+    }
+
+    async function refreshAllCodes() {
+      const utcEl = document.getElementById('utcClockDisplay');
+      if (utcEl) {
+        utcEl.textContent = 'UTC ' + new Date().toISOString().slice(11, 19);
+      }
+      await renderBatchTable();
+      await refreshSteamCode();
+    }
+
+    async function renderBatchTable() {
+      const tbody = document.getElementById('batchTableBody');
+      const countBadge = document.getElementById('batchCountBadge');
+      const filterKeyword = (document.getElementById('batchFilterInput').value || '').trim().toLowerCase();
+      const settings = getTotpSettings();
+
+      countBadge.textContent = parsedAccounts.length === 1
+        ? '1' + _t('unitAccountOne')
+        : parsedAccounts.length + _t('unitAccounts');
+
+      const filtered = parsedAccounts.filter(function(item) {
+        if (!filterKeyword) return true;
+        return item.label.toLowerCase().includes(filterKeyword) || item.secret.toLowerCase().includes(filterKeyword);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-8 px-4 text-center">' +
+          '<button type="button" onclick="focusOmniInput()" class="inline-flex flex-col items-center gap-3 group">' +
+            '<div class="inline-flex flex-wrap items-center justify-center gap-2.5">' +
+              '<kbd class="px-5 py-2.5 rounded-xl bg-zinc-900 border-2 border-dashed border-emerald-500/50 group-hover:border-emerald-400 group-hover:bg-emerald-500/10 font-mono-tabular text-xl sm:text-2xl font-bold text-emerald-400 transition">Ctrl + V</kbd>' +
+              '<span class="text-emerald-400/80 font-mono-tabular text-lg font-bold">→</span>' +
+              '<kbd class="px-5 py-2.5 rounded-xl bg-zinc-900 border-2 border-dashed border-emerald-500/50 group-hover:border-emerald-400 group-hover:bg-emerald-500/10 font-mono-tabular text-xl sm:text-2xl font-bold text-emerald-400 transition">Ctrl + C</kbd>' +
+            '</div>' +
+            '<span class="text-sm sm:text-base font-medium text-zinc-200 group-hover:text-emerald-300 transition max-w-xl">' + _t('emptyCtaTitle') + '</span>' +
+            '<span class="text-xs text-zinc-400 underline group-hover:text-zinc-300">' + _t('emptyCtaSub') + '</span>' +
+          '</button></td></tr>';
+        return;
+      }
+
+      const now = Date.now();
+      const rowsHtml = [];
+
+      for (let idx = 0; idx < filtered.length; idx++) {
+        const acct = filtered[idx];
+        const dual = await getDualTOTP(acct.secret, acct.period || settings.period, acct.digits || settings.digits, acct.algorithm || settings.algorithm);
+        const maskedSecret = acct.secret.length > 10
+          ? (acct.secret.slice(0, 4) + '•••' + acct.secret.slice(-4))
+          : acct.secret;
+
+        let remColor = 'text-emerald-400';
+        if (dual.remaining <= 4) remColor = 'text-red-400 font-bold';
+        else if (dual.remaining <= 9) remColor = 'text-amber-400';
+
+        const copiedInfo = rowCopiedState[acct.id];
+        const isRecentlyCopied = copiedInfo && copiedInfo.expiresAt > now;
+        const currentAdvance = parsedAccounts[autoAdvanceIndex];
+        const isCurrentAdvance = autoAdvanceEnabled && currentAdvance && currentAdvance.id === acct.id;
+        const rowFlashClass = isRecentlyCopied
+          ? 'row-copied-flash bg-emerald-500/10'
+          : (isCurrentAdvance ? 'bg-zinc-700 hover:bg-zinc-700' : 'hover:bg-zinc-900/80');
+
+        // Fixed-width pill across all three states keeps the action column (and row height) stable on click.
+        const buttonHtml = isRecentlyCopied
+          ? '<span class="inline-flex items-center justify-center min-w-[6.5rem] whitespace-nowrap px-2.5 py-0.5 rounded-full bg-emerald-500 text-zinc-950 font-semibold text-xs font-mono-tabular">✅ ' + copiedInfo.code + '</span>'
+          : (dual.shouldUseNext
+              ? '<span class="inline-flex items-center justify-center min-w-[6.5rem] whitespace-nowrap px-2.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 text-xs group-hover:bg-red-500 group-hover:text-zinc-950 group-hover:border-red-400 transition">' + _t('btnRollover') + '</span>'
+              : '<span class="inline-flex items-center justify-center min-w-[6.5rem] whitespace-nowrap px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs group-hover:bg-emerald-500 group-hover:text-zinc-950 group-hover:border-emerald-400 transition">' + _t('btnCopy') + '</span>');
+
+        rowsHtml.push(
+          '<tr onclick="handleBatchRowClick(\'' + acct.id + '\')" class="cursor-pointer group transition ' + rowFlashClass + '">' +
+            '<td class="py-2.5 px-3 text-zinc-500">' + (idx + 1) + '</td>' +
+            '<td class="py-2.5 px-3 font-medium text-zinc-100">' + escapeHtml(acct.label) + '</td>' +
+            '<td class="py-2.5 px-3 text-zinc-500 hidden sm:table-cell">' + maskedSecret + '</td>' +
+            '<td class="py-2.5 px-3 text-base font-bold text-white">' + formatGroupedCodeHtml(dual.currentCode, 'ml-1.5') + '</td>' +
+            '<td class="py-2.5 px-3 text-zinc-400 ' + (dual.shouldUseNext ? 'text-red-300 font-bold' : '') + '">' + formatGroupedCodeHtml(dual.nextCode, 'ml-1.5') + '</td>' +
+            '<td class="py-2.5 px-3 ' + remColor + '">' + dual.remaining + 's</td>' +
+            '<td class="py-2.5 px-3 text-right">' + buttonHtml + '</td>' +
+          '</tr>'
+        );
+      }
+
+      tbody.innerHTML = rowsHtml.join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function onAutoAdvanceToggle(checked) {
+      autoAdvanceEnabled = checked;
+      if (!checked) autoAdvanceIndex = 0;
+      try { localStorage.setItem('2fa_pub_auto_advance', checked ? '1' : '0'); } catch (e) {}
+      renderBatchTable();
+    }
+
+    function getCurrentAdvanceAccount() {
+      if (!autoAdvanceEnabled || parsedAccounts.length === 0) return null;
+      if (autoAdvanceIndex >= parsedAccounts.length) autoAdvanceIndex = 0;
+      return parsedAccounts[autoAdvanceIndex];
+    }
+
+    async function copySmartSingleCode() {
+      const primary = (autoAdvanceEnabled && parsedAccounts.length > 0) ? getCurrentAdvanceAccount() : parsedAccounts[0];
+      if (!primary || !primary.secret) {
+        showToast(_t('toastNeedSecret'), 'warn');
+        return;
+      }
+      const settings = getTotpSettings();
+      const dual = await getDualTOTP(primary.secret, primary.period || settings.period, primary.digits || settings.digits, primary.algorithm || settings.algorithm);
+      const chosenCode = dual.shouldUseNext ? dual.nextCode : dual.currentCode;
+      await copyTextToClipboard(chosenCode);
+
+      trackSiteEvent('totp_copy', { mode: 'single', rollover: dual.shouldUseNext });
+      if (dual.shouldUseNext) {
+        trackSiteEvent('smart_rollover', { remaining: dual.remaining });
+      }
+
+      if (autoAdvanceEnabled && parsedAccounts.length > 0) {
+        rowCopiedState[primary.id] = { code: chosenCode, expiresAt: Date.now() + 1400 };
+        autoAdvanceIndex = (parsedAccounts.indexOf(primary) + 1) % parsedAccounts.length;
+        renderBatchTable();
+      }
+
+      if (dual.shouldUseNext) {
+        showToast(_t('toastCopiedRollover') + chosenCode, 'warn');
+      } else {
+        showToast(_t('toastCopied') + chosenCode);
+      }
+    }
+
+    async function copyExplicitNextCode() {
+      const primary = parsedAccounts[0];
+      if (!primary || !primary.secret) return;
+      const settings = getTotpSettings();
+      const dual = await getDualTOTP(primary.secret, primary.period || settings.period, primary.digits || settings.digits, primary.algorithm || settings.algorithm);
+      await copyTextToClipboard(dual.nextCode);
+      trackSiteEvent('totp_copy', { mode: 'explicit_next' });
+      showToast(_t('toastCopiedNext') + dual.nextCode);
+    }
+
+    async function handleBatchRowClick(rowId) {
+      const acct = parsedAccounts.find(function(a) { return a.id === rowId; });
+      if (!acct) return;
+      const settings = getTotpSettings();
+      const dual = await getDualTOTP(acct.secret, acct.period || settings.period, acct.digits || settings.digits, acct.algorithm || settings.algorithm);
+      const codeToCopy = dual.shouldUseNext ? dual.nextCode : dual.currentCode;
+      await copyTextToClipboard(codeToCopy);
+
+      trackSiteEvent('totp_copy', { mode: 'batch_row', rollover: dual.shouldUseNext });
+      if (dual.shouldUseNext) {
+        trackSiteEvent('smart_rollover', { remaining: dual.remaining });
+      }
+
+      rowCopiedState[rowId] = {
+        code: codeToCopy,
+        expiresAt: Date.now() + 1400
+      };
+      if (autoAdvanceEnabled) {
+        autoAdvanceIndex = (parsedAccounts.indexOf(acct) + 1) % parsedAccounts.length;
+      }
+      await renderBatchTable();
+
+      if (dual.shouldUseNext) {
+        showToast('⚡ [' + acct.label + '] ' + _t('toastRowRollover') + codeToCopy, 'warn');
+      } else {
+        showToast('✅ [' + acct.label + '] ' + _t('toastRowCopied') + codeToCopy);
+      }
+      setTimeout(function() {
+        renderBatchTable();
+      }, 1450);
+    }
+
+    async function copyAllBatchCodes() {
+      if (parsedAccounts.length === 0) return;
+      const settings = getTotpSettings();
+      const lines = [];
+      for (let i = 0; i < parsedAccounts.length; i++) {
+        const a = parsedAccounts[i];
+        const dual = await getDualTOTP(a.secret, a.period || settings.period, a.digits || settings.digits, a.algorithm || settings.algorithm);
+        lines.push(a.label + '\t' + (dual.shouldUseNext ? dual.nextCode : dual.currentCode));
+      }
+      await copyTextToClipboard(lines.join('\n'));
+      trackSiteEvent('totp_copy', { mode: 'batch_all', count: lines.length });
+      showToast(lines.length === 1 ? _t('toastOneCodeCopied') : _t('toastBatchCopied1') + lines.length + _t('toastBatchCopied2'));
+    }
+
+    function exportBatchCsv() {
+      if (parsedAccounts.length === 0) return;
+      const header = 'Index,Label,Base32Secret\n';
+      const body = parsedAccounts.map(function(a, i) {
+        return (i + 1) + ',"' + a.label.replace(/"/g, '""') + '",' + a.secret;
+      }).join('\n');
+      const blob = new Blob([header + body], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = '2fa-pub-secrets.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showToast(_t('toastCsvExported'));
+    }
+
+    function loadSampleSingle() {
+      switchTab('totp');
+      document.getElementById('omniInputTextarea').value = 'GitHub:dev@2fa.pub----JBSWY3DPEHPK3PXP';
+      handleOmniInput();
+      showToast(_t('toastSampleSingle'));
+    }
+
+    function loadSampleBatch() {
+      switchTab('totp');
+      document.getElementById('omniInputTextarea').value = [
+        'github_main@2fa.pub----Pass#2026----JBSWY3DPEHPK3PXP',
+        'aws_prod_root | AKIAIOSFODNN7EXAMPLE | HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ',
+        'tiktok_shop_us_01,seller2026,GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+        'Cloudflare:ops@2fa.pub----MFRGGZDFMZTWQ2LK'
+      ].join('\n');
+      handleOmniInput();
+      trackSiteEvent('batch_clean', { count: 4 });
+      showToast(_t('toastSampleBatch'));
+    }
+
+    async function triggerBlindPasteDemo() {
+      switchTab('totp');
+      document.getElementById('omniInputTextarea').value = 'Vercel:deploy@2fa.pub----JBSWY3DPEHPK3PXP';
+      await handleOmniInput();
+      showParseResultToast();
+    }
+
+    async function simulateSmartRolloverDemo() {
+      switchTab('totp');
+      if (parsedAccounts.length === 0) loadSampleSingle();
+      simulatedRolloverUntil = Date.now() + 4000;
+      await refreshAllCodes();
+      await copySmartSingleCode();
+    }
+
+    function focusOmniInput() {
+      switchTab('totp');
+      const ta = document.getElementById('omniInputTextarea');
+      if (ta) {
+        ta.focus();
+        ta.select();
+      }
+    }
+
+    function cycleNextTab() {
+      const order = ['totp', 'migration', 'qrgen', 'steam', 'vault', 'cli'];
+      const nextIdx = (order.indexOf(currentTab) + 1) % order.length;
+      switchTab(order[nextIdx]);
+    }
+
+    function checkUrlHashRoute() {
+      const rawHash = window.location.hash ? window.location.hash.slice(1) : '';
+      if (!rawHash) return;
+      try {
+        if (rawHash.includes('=')) {
+          const params = new URLSearchParams(rawHash);
+          const secret = params.get('secret');
+          const label = params.get('label') || 'Bookmark';
+          if (secret) {
+            document.getElementById('omniInputTextarea').value = label + '----' + secret;
+            handleOmniInput();
+          }
+        } else if (/^[A-Za-z2-7]+=*$/.test(rawHash.trim())) {
+          document.getElementById('omniInputTextarea').value = rawHash.trim().toUpperCase();
+          handleOmniInput();
+        }
+      } catch (e) {}
+    }
+
+    async function copyBookmarkHashUrl() {
+      const primary = parsedAccounts[0];
+      if (!primary || !primary.secret) {
+        showToast(_t('toastNeedSecretShort'), 'warn');
+        return;
+      }
+      const base = window.location.href.split('#')[0];
+      const hashUrl = base + '#secret=' + encodeURIComponent(primary.secret) + '&label=' + encodeURIComponent(primary.label);
+      try {
+        window.location.hash = 'secret=' + encodeURIComponent(primary.secret) + '&label=' + encodeURIComponent(primary.label);
+      } catch (e) {}
+      await copyTextToClipboard(hashUrl);
+      showToast(_t('toastHashCopied'));
+    }
+
+    function decodeQrFromImageFile(file, callback) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.getElementById('hiddenQrDecodeCanvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          const imageData = ctx.getImageData(0, 0, img.width, img.height);
+          if (typeof jsQR === 'function') {
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code && code.data) callback(null, code.data);
+            else callback(new Error(_t('toastQrFailed')));
+          } else {
+            callback(new Error(_t('toastQrNotReady')));
+          }
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleQrFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      decodeQrFromImageFile(file, async function(err, qrText) {
+        if (err) {
+          showToast(err.message, 'error');
+          return;
+        }
+        trackSiteEvent('qr_decode', { source: 'upload' });
+        await processDecodedQrString(qrText);
+      });
+      event.target.value = '';
+    }
+
+    function showParseResultToast() {
+      if (parsedAccounts.length === 1) {
+        showToast(_t('toastBatchExtracted1') + '1' + _t('unitAccountOne'));
+      } else if (parsedAccounts.length > 1) {
+        showToast(_t('toastBatchExtracted1') + parsedAccounts.length + _t('toastBatchExtracted2'));
+      }
+    }
+
+    async function processDecodedQrString(qrText) {
+      if (qrText.startsWith('otpauth-migration://')) {
+        switchTab('migration');
+        document.getElementById('migrationUriInput').value = qrText;
+        parseMigrationInput();
+        showToast(_t('toastMigrationDecoded'));
+        return;
+      }
+      document.getElementById('omniInputTextarea').value = qrText;
+      await handleOmniInput();
+      showParseResultToast();
+    }
+
+    document.addEventListener('paste', async function(e) {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type && item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          decodeQrFromImageFile(file, async function(err, qrText) {
+            if (err) {
+              showToast(err.message, 'error');
+              return;
+            }
+            trackSiteEvent('qr_decode', { source: 'clipboard_image' });
+            await processDecodedQrString(qrText);
+          });
+          return;
+        }
+      }
+
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (activeTag !== 'textarea' && activeTag !== 'input') {
+        const pastedText = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
+        if (pastedText && pastedText.trim()) {
+          e.preventDefault();
+          if (pastedText.trim().startsWith('otpauth-migration://')) {
+            switchTab('migration');
+            document.getElementById('migrationUriInput').value = pastedText.trim();
+            parseMigrationInput();
+            return;
+          }
+          switchTab('totp');
+          document.getElementById('omniInputTextarea').value = pastedText.trim();
+          await handleOmniInput();
+          if (parsedAccounts.length > 1) {
+            trackSiteEvent('batch_clean', { count: parsedAccounts.length });
+          }
+          showParseResultToast();
+        }
+      }
+    });
+
+    function hasActiveTextSelection() {
+      try {
+        const sel = window.getSelection ? window.getSelection() : null;
+        if (sel && String(sel.toString()).trim().length > 0) return true;
+      } catch (e) {}
+      try {
+        const el = document.activeElement;
+        if (el && (el.tagName === 'TEXTAREA' || el.tagName === 'INPUT')) {
+          if (typeof el.selectionStart === 'number' && typeof el.selectionEnd === 'number' && el.selectionStart !== el.selectionEnd) {
+            return true;
+          }
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (e.key === 'Escape') {
+        burnAllData();
+        return;
+      }
+      if (e.altKey && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        e.preventDefault();
+        const tabs = ['totp', 'migration', 'qrgen', 'steam', 'vault', 'cli'];
+        switchTab(tabs[Number(e.key) - 1]);
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && (e.key === 'c' || e.key === 'C')) {
+        if (!hasActiveTextSelection()) {
+          if (currentTab === 'steam') {
+            const steamVal = (document.getElementById('steamSecretInput').value || '').trim();
+            if (steamVal) {
+              e.preventDefault();
+              copySteamToken();
+              return;
+            }
+          }
+          if (currentTab === 'totp' || parsedAccounts.length > 0) {
+            e.preventDefault();
+            copySmartSingleCode();
+            return;
+          }
+        }
+        return;
+      }
+      if (activeTag !== 'textarea' && activeTag !== 'input' && e.key === '/') {
+        e.preventDefault();
+        focusOmniInput();
+      }
+    });
+
+    function burnAllData() {
+      document.getElementById('omniInputTextarea').value = '';
+      document.getElementById('migrationUriInput').value = '';
+      const steamEl = document.getElementById('steamSecretInput');
+      if (steamEl) steamEl.value = '';
+      const qrSecEl = document.getElementById('qrGenSecret');
+      if (qrSecEl) qrSecEl.value = '';
+      const vaultPassEl = document.getElementById('vaultMasterPassword');
+      if (vaultPassEl) vaultPassEl.value = '';
+      const filterEl = document.getElementById('batchFilterInput');
+      if (filterEl) filterEl.value = '';
+      parsedAccounts = [];
+      extractedMigrationAccounts = [];
+      rowCopiedState = {};
+      autoAdvanceIndex = 0;
+      simulatedRolloverUntil = 0;
+      try {
+        if (window.location.hash) {
+          history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        }
+      } catch (e) {}
+      handleOmniInput();
+      parseMigrationInput();
+      refreshSteamCode();
+      renderQrGenerator();
+      showToast(_t('toastBurned'), 'warn');
+    }
+
+    // =========================================================================
+    // 6. GOOGLE MIGRATION DECODER
+    // =========================================================================
+    function base64UrlToUint8Array(base64Str) {
+      let cleaned = (base64Str || '').trim();
+      try { cleaned = decodeURIComponent(cleaned); } catch (e) {}
+      cleaned = cleaned.replace(/-/g, '+').replace(/_/g, '/').replace(/\s+/g, '');
+      while (cleaned.length % 4 !== 0) cleaned += '=';
+      const binStr = atob(cleaned);
+      const bytes = new Uint8Array(binStr.length);
+      for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+      return bytes;
+    }
+
+    function readVarint(bytes, offset) {
+      let result = 0, shift = 0, pos = offset;
+      while (pos < bytes.length) {
+        const b = bytes[pos++];
+        result |= (b & 0x7f) << shift;
+        if ((b & 0x80) === 0) return { value: result >>> 0, nextOffset: pos };
+        shift += 7;
+      }
+      return { value: result >>> 0, nextOffset: pos };
+    }
+
+    function decodeOtpParametersEntry(subBytes) {
+      let pos = 0, secretBytes = new Uint8Array(0), name = '', issuer = '', algorithm = 1, digits = 1, type = 2;
+      const utf8Decoder = new TextDecoder('utf-8');
+      while (pos < subBytes.length) {
+        const tagInfo = readVarint(subBytes, pos);
+        pos = tagInfo.nextOffset;
+        const fieldNumber = tagInfo.value >>> 3;
+        const wireType = tagInfo.value & 0x07;
+        if (wireType === 0) {
+          const v = readVarint(subBytes, pos);
+          pos = v.nextOffset;
+          if (fieldNumber === 4) algorithm = v.value;
+          else if (fieldNumber === 5) digits = v.value;
+          else if (fieldNumber === 6) type = v.value;
+        } else if (wireType === 2) {
+          const lenInfo = readVarint(subBytes, pos);
+          pos = lenInfo.nextOffset;
+          const slice = subBytes.subarray(pos, pos + lenInfo.value);
+          pos += lenInfo.value;
+          if (fieldNumber === 1) secretBytes = slice;
+          else if (fieldNumber === 2) name = utf8Decoder.decode(slice);
+          else if (fieldNumber === 3) issuer = utf8Decoder.decode(slice);
+        } else break;
+      }
+      return {
+        secret: bytesToBase32(secretBytes),
+        name: name || 'Unnamed',
+        issuer: issuer || 'GoogleAuth',
+        algorithm: algorithm === 2 ? 'SHA-256' : algorithm === 3 ? 'SHA-512' : 'SHA-1',
+        digits: digits === 2 ? 8 : 6,
+        type: type === 1 ? 'HOTP' : 'TOTP'
+      };
+    }
+
+    function decodeGoogleMigrationUri(inputStr) {
+      let dataParam = (inputStr || '').trim();
+      if (dataParam.includes('data=')) dataParam = dataParam.slice(dataParam.indexOf('data=') + 5).split('&')[0];
+      const bytes = base64UrlToUint8Array(dataParam);
+      let pos = 0;
+      const accounts = [];
+      while (pos < bytes.length) {
+        const tagInfo = readVarint(bytes, pos);
+        pos = tagInfo.nextOffset;
+        const fieldNumber = tagInfo.value >>> 3;
+        const wireType = tagInfo.value & 0x07;
+        if (wireType === 2) {
+          const lenInfo = readVarint(bytes, pos);
+          pos = lenInfo.nextOffset;
+          const subBytes = bytes.subarray(pos, pos + lenInfo.value);
+          pos += lenInfo.value;
+          if (fieldNumber === 1) {
+            const entry = decodeOtpParametersEntry(subBytes);
+            if (entry.secret) accounts.push(entry);
+          }
+        } else if (wireType === 0) {
+          pos = readVarint(bytes, pos).nextOffset;
+        } else break;
+      }
+      return accounts;
+    }
+
+    function buildDemoMigrationUri() {
+      function encodeStringField(fieldNo, str) {
+        const enc = new TextEncoder().encode(str);
+        return [((fieldNo << 3) | 2), enc.length, ...enc];
+      }
+      function encodeBytesField(fieldNo, rawBytes) {
+        return [((fieldNo << 3) | 2), rawBytes.length, ...rawBytes];
+      }
+      function encodeVarintField(fieldNo, val) {
+        return [((fieldNo << 3) | 0), val];
+      }
+      function makeEntry(secretB32, name, issuer) {
+        const secBytes = Array.from(base32ToBytes(secretB32));
+        const body = [
+          ...encodeBytesField(1, secBytes),
+          ...encodeStringField(2, name),
+          ...encodeStringField(3, issuer),
+          ...encodeVarintField(4, 1),
+          ...encodeVarintField(5, 1),
+          ...encodeVarintField(6, 2)
+        ];
+        return [0x0a, body.length, ...body];
+      }
+      const payload = [
+        ...makeEntry('JBSWY3DPEHPK3PXP', 'github:alex@2fa.pub', 'GitHub'),
+        ...makeEntry('HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ', 'aws-prod:root@2fa.pub', 'AWS'),
+        ...makeEntry('MFRGGZDFMZTWQ2LK', 'cloudflare:sec@2fa.pub', 'Cloudflare')
+      ];
+      const u8 = new Uint8Array(payload);
+      let bin = '';
+      for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+      return 'otpauth-migration://offline?data=' + encodeURIComponent(btoa(bin));
+    }
+
+    function loadDemoMigrationPayload() {
+      document.getElementById('migrationUriInput').value = buildDemoMigrationUri();
+      parseMigrationInput();
+    }
+
+    function parseMigrationInput() {
+      const raw = document.getElementById('migrationUriInput').value.trim();
+      const tbody = document.getElementById('migrationResultBody');
+      if (!raw) {
+        extractedMigrationAccounts = [];
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-zinc-500">' + _t('migrationEmpty') + '</td></tr>';
+        return;
+      }
+      try {
+        const list = decodeGoogleMigrationUri(raw);
+        extractedMigrationAccounts = list;
+        tbody.innerHTML = list.map(function(item, idx) {
+          return (
+            '<tr class="hover:bg-zinc-900/70">' +
+              '<td class="py-2.5 px-3 text-zinc-500">' + (idx + 1) + '</td>' +
+              '<td class="py-2.5 px-3 text-emerald-400 font-semibold">' + escapeHtml(item.issuer) + '</td>' +
+              '<td class="py-2.5 px-3 text-zinc-200">' + escapeHtml(item.name) + '</td>' +
+              '<td class="py-2.5 px-3 text-amber-300 select-all">' + item.secret + '</td>' +
+              '<td class="py-2.5 px-3 text-zinc-400">' + item.algorithm + '/' + item.digits + _t('digitsUnit') + '</td>' +
+              '<td class="py-2.5 px-3 text-right">' +
+                '<button type="button" onclick="copyMigrationSecret(' + idx + ')" class="px-2.5 py-1 rounded bg-zinc-900 border border-zinc-700 text-xs text-zinc-200">' + _t('btnCopySecret') + '</button>' +
+              '</td>' +
+            '</tr>'
+          );
+        }).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-red-400">' + _t('migrationFail') + '</td></tr>';
+      }
+    }
+
+    async function copyMigrationSecret(idx) {
+      const item = extractedMigrationAccounts[idx];
+      if (!item) return;
+      await copyTextToClipboard(item.secret);
+      showToast(_t('toastSecretCopied') + item.secret);
+    }
+
+    function sendMigrationAccountsToBatch() {
+      if (extractedMigrationAccounts.length === 0) return;
+      document.getElementById('omniInputTextarea').value = extractedMigrationAccounts.map(function(item) {
+        if ((item.digits && item.digits !== 6) || (item.algorithm && item.algorithm !== 'SHA-1')) {
+          return 'otpauth://totp/' + encodeURIComponent(item.issuer + ':' + item.name) +
+            '?secret=' + encodeURIComponent(item.secret) +
+            '&issuer=' + encodeURIComponent(item.issuer) +
+            '&digits=' + (item.digits || 6) +
+            '&algorithm=' + encodeURIComponent((item.algorithm || 'SHA-1').replace('-', ''));
+        }
+        return item.issuer + ':' + item.name + '----' + item.secret;
+      }).join('\n');
+      switchTab('totp');
+      handleOmniInput();
+      showToast(_t('toastImported'));
+    }
+
+    function handleMigrationQrUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      decodeQrFromImageFile(file, function(err, qrText) {
+        if (err) {
+          showToast(err.message, 'error');
+          return;
+        }
+        trackSiteEvent('qr_decode', { source: 'migration_qr' });
+        document.getElementById('migrationUriInput').value = qrText;
+        parseMigrationInput();
+      });
+      event.target.value = '';
+    }
+
+    // =========================================================================
+    // 7. QR GENERATOR
+    // =========================================================================
+    function renderQrGenerator() {
+      const secret = (document.getElementById('qrGenSecret').value || '').replace(/\s+/g, '').toUpperCase();
+      const issuer = (document.getElementById('qrGenIssuer').value || '2fa.pub').trim();
+      const account = (document.getElementById('qrGenAccount').value || 'user').trim();
+      const period = Number(document.getElementById('qrGenPeriod').value) || 30;
+      const digits = Number(document.getElementById('qrGenDigits').value) || 6;
+
+      const uri = 'otpauth://totp/' + encodeURIComponent(issuer) + ':' + encodeURIComponent(account) +
+        '?secret=' + encodeURIComponent(secret) + '&issuer=' + encodeURIComponent(issuer) +
+        '&period=' + period + '&digits=' + digits;
+      document.getElementById('qrGenOtpauthUri').value = uri;
+
+      const canvas = document.getElementById('qrOutputCanvas');
+      if (!canvas || typeof qrcode !== 'function') return;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(uri);
+        qr.make();
+        const count = qr.getModuleCount();
+        const padding = 10;
+        const cellSize = (canvas.width - padding * 2) / count;
+        ctx.fillStyle = '#09090B';
+        for (let r = 0; r < count; r++) {
+          for (let c = 0; c < count; c++) {
+            if (qr.isDark(r, c)) {
+              ctx.fillRect(padding + c * cellSize, padding + r * cellSize, Math.ceil(cellSize), Math.ceil(cellSize));
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function copyQrOtpauthUri() {
+      await copyTextToClipboard(document.getElementById('qrGenOtpauthUri').value);
+      showToast(_t('toastLinkCopied'));
+    }
+
+    function downloadQrPng() {
+      const canvas = document.getElementById('qrOutputCanvas');
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = '2fa-qrcode.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function openCurrentInQrGenerator() {
+      const primary = parsedAccounts[0];
+      if (primary && primary.secret) {
+        document.getElementById('qrGenSecret').value = primary.secret;
+        document.getElementById('qrGenAccount').value = primary.label;
+      }
+      switchTab('qrgen');
+      renderQrGenerator();
+    }
+
+    // =========================================================================
+    // 8. STEAM GUARD
+    // =========================================================================
+    const STEAM_CHARS = '23456789BCDFGHJKMNPQRTVWXY';
+
+    function extractSteamSecretBytes(rawInput) {
+      const trimmed = (rawInput || '').trim();
+      const hintEl = document.getElementById('steamParseModeHint');
+      if (!trimmed) return new Uint8Array(0);
+      if (trimmed.startsWith('{')) {
+        try {
+          const obj = JSON.parse(trimmed);
+          if (obj.shared_secret) {
+            if (hintEl) hintEl.textContent = _t('steamHintMaFile') + (obj.account_name || 'Steam') + ')';
+            return extractSteamSecretBytes(String(obj.shared_secret));
+          }
+        } catch (e) {}
+      }
+      const upper = trimmed.replace(/\s+/g, '').toUpperCase();
+      if (/^[A-Z2-7]{16,64}=*$/.test(upper)) {
+        if (hintEl) hintEl.textContent = _t('steamHintB32');
+        return base32ToBytes(upper);
+      }
+      try {
+        const bin = atob(trimmed);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+        if (out.length > 0) {
+          if (hintEl) hintEl.textContent = _t('steamHintB64');
+          return out;
+        }
+      } catch (e) {}
+      return base32ToBytes(upper);
+    }
+
+    async function computeSteamCodeForTimestamp(secretBytes, timestampMs) {
+      if (!secretBytes || secretBytes.length === 0) return '-----';
+      const counter = Math.floor(timestampMs / 1000 / 30);
+      const buf = new ArrayBuffer(8);
+      const view = new DataView(buf);
+      view.setUint32(0, Math.floor(counter / 0x100000000), false);
+      view.setUint32(4, counter & 0xffffffff, false);
+      const key = await crypto.subtle.importKey('raw', secretBytes, { name: 'HMAC', hash: { name: 'SHA-1' } }, false, ['sign']);
+      const sig = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
+      const offset = sig[sig.length - 1] & 0x0f;
+      let fullCode =
+        ((sig[offset] & 0x7f) << 24) |
+        ((sig[offset + 1] & 0xff) << 16) |
+        ((sig[offset + 2] & 0xff) << 8) |
+        (sig[offset + 3] & 0xff);
+      let code = '';
+      for (let i = 0; i < 5; i++) {
+        code += STEAM_CHARS.charAt(fullCode % STEAM_CHARS.length);
+        fullCode = Math.floor(fullCode / STEAM_CHARS.length);
+      }
+      return code;
+    }
+
+    async function refreshSteamCode() {
+      const inputEl = document.getElementById('steamSecretInput');
+      if (!inputEl) return;
+      const bytes = extractSteamSecretBytes(inputEl.value);
+      const now = Date.now();
+      const remaining = 30 - (Math.floor(now / 1000) % 30);
+      document.getElementById('steamCurrentToken').textContent = await computeSteamCodeForTimestamp(bytes, now);
+      document.getElementById('steamNextToken').textContent = await computeSteamCodeForTimestamp(bytes, now + 30000);
+      document.getElementById('steamRemainingLabel').textContent = _t('steamRemaining') + remaining + 's';
+      document.getElementById('steamProgressBar').style.width = Math.max(4, Math.round((remaining / 30) * 100)) + '%';
+    }
+
+    async function copySteamToken() {
+      const bytes = extractSteamSecretBytes(document.getElementById('steamSecretInput').value);
+      const now = Date.now();
+      const remaining = 30 - (Math.floor(now / 1000) % 30);
+      const token = remaining <= 4
+        ? await computeSteamCodeForTimestamp(bytes, now + 30000)
+        : await computeSteamCodeForTimestamp(bytes, now);
+      await copyTextToClipboard(token);
+      trackSiteEvent('totp_copy', { mode: 'steam_guard', rollover: remaining <= 4 });
+      showToast(_t('toastSteamCopied') + token);
+    }
+
+    function loadSteamSample() {
+      document.getElementById('steamSecretInput').value = '{"account_name":"steam_matrix_01","shared_secret":"cnOgv/K72017265981234567890="}';
+      refreshSteamCode();
+    }
+
+    // =========================================================================
+    // 9. AES-GCM VAULT
+    // =========================================================================
+    const VAULT_STORAGE_KEY = '2fa_pub_aes_gcm_vault_v1';
+
+    function uint8ToBase64(u8) {
+      let s = '';
+      for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+      return btoa(s);
+    }
+
+    function base64ToUint8(b64) {
+      const s = atob(b64);
+      const out = new Uint8Array(s.length);
+      for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+      return out;
+    }
+
+    async function deriveAesGcmKey(password, saltBytes) {
+      const enc = new TextEncoder();
+      const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: saltBytes, iterations: 100000, hash: 'SHA-256' },
+        baseKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+      );
+    }
+
+    function refreshVaultStatusPreview() {
+      const previewEl = document.getElementById('vaultCiphertextPreview');
+      const badgeEl = document.getElementById('vaultStatusBadge');
+      try {
+        const stored = localStorage.getItem(VAULT_STORAGE_KEY);
+        if (stored) {
+          previewEl.textContent = JSON.stringify(JSON.parse(stored), null, 2);
+          badgeEl.textContent = _t('vaultBadgeSaved');
+        } else {
+          previewEl.textContent = _t('vaultPreviewClean');
+          badgeEl.textContent = _t('vaultBadgeMemory');
+        }
+      } catch (e) {
+        previewEl.textContent = _t('vaultPreviewMemory');
+      }
+    }
+
+    async function encryptAndSaveVault() {
+      const password = document.getElementById('vaultMasterPassword').value;
+      const rawText = document.getElementById('omniInputTextarea').value.trim();
+      if (!password || !rawText) {
+        showToast(_t('toastVaultNeedInput'), 'warn');
+        return;
+      }
+      try {
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const key = await deriveAesGcmKey(password, salt);
+        const cipherBuffer = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(rawText));
+        const payload = {
+          version: 1,
+          kdf: 'PBKDF2-HMAC-SHA256',
+          iterations: 100000,
+          cipher: 'AES-256-GCM',
+          salt: uint8ToBase64(salt),
+          iv: uint8ToBase64(iv),
+          ciphertext: uint8ToBase64(new Uint8Array(cipherBuffer))
+        };
+        localStorage.setItem(VAULT_STORAGE_KEY, JSON.stringify(payload));
+        refreshVaultStatusPreview();
+        showToast(_t('toastVaultSaved'));
+      } catch (e) {
+        showToast(_t('toastVaultSaveFail'), 'error');
+      }
+    }
+
+    async function decryptAndLoadVault() {
+      const password = document.getElementById('vaultMasterPassword').value;
+      if (!password) return;
+      try {
+        const stored = localStorage.getItem(VAULT_STORAGE_KEY);
+        if (!stored) return;
+        const payload = JSON.parse(stored);
+        const key = await deriveAesGcmKey(password, base64ToUint8(payload.salt));
+        const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: base64ToUint8(payload.iv) }, key, base64ToUint8(payload.ciphertext));
+        document.getElementById('omniInputTextarea').value = new TextDecoder().decode(plainBuffer);
+        switchTab('totp');
+        await handleOmniInput();
+        showToast(_t('toastVaultLoaded'));
+      } catch (e) {
+        showToast(_t('toastVaultWrongPass'), 'error');
+      }
+    }
+
+    function clearEncryptedVault() {
+      try { localStorage.removeItem(VAULT_STORAGE_KEY); } catch (e) {}
+      refreshVaultStatusPreview();
+      showToast(_t('toastVaultWiped'), 'warn');
+    }
+
+    function quickSendToVault() {
+      switchTab('vault');
+      document.getElementById('vaultMasterPassword').focus();
+    }
+
+    // =========================================================================
+    // 10. CLI & SECURITY AUDIT
+    // =========================================================================
+    function runLiveSecurityAudit() {
+      const box = document.getElementById('securityAuditResultBox');
+      if (!box) return;
+      const entries = (window.performance && window.performance.getEntriesByType)
+        ? window.performance.getEntriesByType('resource')
+        : [];
+      const xhrFetchCalls = entries.filter(function(e) {
+        return e.initiatorType === 'xmlhttprequest' || e.initiatorType === 'fetch' || e.initiatorType === 'beacon';
+      });
+      const subtleAvailable = !!(window.crypto && window.crypto.subtle);
+      const tile = function(label, value, tone) {
+        const color = tone === 'ok' ? 'text-emerald-400' : (tone === 'bad' ? 'text-red-400' : 'text-zinc-100');
+        return '<div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800">' +
+          '<div class="text-[11px] text-zinc-400">' + label + '</div>' +
+          '<div class="text-sm font-semibold font-mono-tabular mt-1 ' + color + '">' + value + '</div>' +
+        '</div>';
+      };
+      box.innerHTML =
+        tile(_t('auditCrypto'), subtleAvailable ? _t('auditCryptoOk') : _t('auditCryptoBad'), subtleAvailable ? 'ok' : 'bad') +
+        tile(_t('auditRequests'), xhrFetchCalls.length + _t('auditReqUnit'), null) +
+        tile(_t('auditHash'), _t('auditHashOk'), 'ok') +
+        tile(_t('auditSanitize'), _t('auditSanitizeOk'), 'ok');
+    }
+
+    async function copyHeadersConfig() {
+      await copyTextToClipboard(document.getElementById('cspHeadersCodeBlock').textContent);
+      showToast(_t('toastHeadersCopied'));
+    }
+
+    async function copyCliSnippet(kind) {
+      const map = { oath: 'cliSnippetOath', py: 'cliSnippetPy', alias: 'cliSnippetAlias' };
+      await copyTextToClipboard(document.getElementById(map[kind]).textContent);
+      showToast(_t('toastCmdCopied'));
+    }
+
+    const ROUTE_TO_TAB = {
+      '/': 'totp',
+      '/index.html': 'totp',
+      '/google-extractor': 'migration',
+      '/google-extractor.html': 'migration',
+      '/qr-generator': 'qrgen',
+      '/qr-generator.html': 'qrgen',
+      '/steam': 'steam',
+      '/steam.html': 'steam',
+      '/vault': 'vault',
+      '/vault.html': 'vault',
+      '/cli': 'cli',
+      '/cli.html': 'cli'
+    };
+
+    const TAB_TO_ROUTE = {
+      totp: '/',
+      migration: '/google-extractor',
+      qrgen: '/qr-generator',
+      steam: '/steam',
+      vault: '/vault',
+      cli: '/cli'
+    };
+
+    const TAB_TITLE_KEY = {
+      totp: 'pageTitle',
+      migration: 'migrationTitle',
+      qrgen: 'qrGenTitle',
+      steam: 'steamTitle',
+      vault: 'vaultTitle',
+      cli: 'cliTitle'
+    };
+
+    const TAB_DESC_KEY = {
+      totp: 'metaDescription',
+      migration: 'migrationMetaDesc',
+      qrgen: 'qrGenMetaDesc',
+      steam: 'steamMetaDesc',
+      vault: 'vaultMetaDesc',
+      cli: 'cliMetaDesc'
+    };
+
+    const OG_LOCALE_MAP = {
+      en: 'en_US',
+      zh: 'zh_CN',
+      ja: 'ja_JP'
+    };
+
+    const GUIDE_EXPORT_URL_MAP = {
+      en: '/guides/en/google-authenticator-export',
+      zh: '/guides/google-authenticator-export',
+      ja: '/guides/ja/google-authenticator-export'
+    };
+
+    function syncRouteMeta(tabId, skipHistory) {
+      const dict = I18N[currentLang] || I18N.en;
+      const routePath = TAB_TO_ROUTE[tabId] || '/';
+      // Language is a same-URL rendering choice (persisted in localStorage), so
+      // canonical/og:url must always point at the clean route — never at ?lang=
+      // variants, which Cloudflare Pages serves as self-referential 308 loops.
+      const canonicalUrl = 'https://2fa.pub' + routePath;
+
+      const canonicalEl = document.querySelector('link[rel="canonical"]');
+      if (canonicalEl) canonicalEl.setAttribute('href', canonicalUrl);
+      const ogUrlEl = document.querySelector('meta[property="og:url"]');
+      if (ogUrlEl) ogUrlEl.setAttribute('content', canonicalUrl);
+
+      const titleKey = TAB_TITLE_KEY[tabId] || 'pageTitle';
+      const resolvedTitle = (tabId === 'totp' || !dict[titleKey])
+        ? dict.pageTitle
+        : (dict[titleKey] + ' - ' + dict.zeroTrustBadge + ' | 2fa.pub');
+      document.title = resolvedTitle;
+      const h1El = document.querySelector('h1[data-i18n="h1Title"]');
+      if (h1El) {
+        h1El.textContent = (tabId === 'totp' || !dict[titleKey]) ? dict.h1Title : dict[titleKey];
+      }
+
+      const descKey = TAB_DESC_KEY[tabId] || 'metaDescription';
+      const resolvedDesc = dict[descKey] || dict.metaDescription;
+
+      const metaDescEl = document.querySelector('meta[name="description"]');
+      if (metaDescEl && resolvedDesc) metaDescEl.setAttribute('content', resolvedDesc);
+      const ogTitleEl = document.querySelector('meta[property="og:title"]');
+      if (ogTitleEl) ogTitleEl.setAttribute('content', resolvedTitle);
+      const ogDescEl = document.querySelector('meta[property="og:description"]');
+      if (ogDescEl && resolvedDesc) ogDescEl.setAttribute('content', resolvedDesc);
+      const twTitleEl = document.querySelector('meta[name="twitter:title"]');
+      if (twTitleEl) twTitleEl.setAttribute('content', resolvedTitle);
+      const twDescEl = document.querySelector('meta[name="twitter:description"]');
+      if (twDescEl && resolvedDesc) twDescEl.setAttribute('content', resolvedDesc);
+      const ogLocaleEl = document.querySelector('meta[property="og:locale"]');
+      if (ogLocaleEl) ogLocaleEl.setAttribute('content', OG_LOCALE_MAP[currentLang] || 'en_US');
+
+      const guideExportEl = document.getElementById('guideLinkExport');
+      if (guideExportEl) {
+        guideExportEl.setAttribute('href', GUIDE_EXPORT_URL_MAP[currentLang] || GUIDE_EXPORT_URL_MAP.en);
+      }
+
+      if (!skipHistory && window.location && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
+        try {
+          const curPath = window.location.pathname.replace(/\/+$/, '') || '/';
+          if (curPath !== routePath && !(curPath === '/index.html' && routePath === '/')) {
+            const targetUrl = routePath + (window.location.search || '') + (window.location.hash || '');
+            history.replaceState({ tab: tabId }, document.title, targetUrl);
+          }
+        } catch (e) {}
+      }
+    }
+
+    function resolveInitialTabFromPath() {
+      try {
+        const rawPath = (window.location && window.location.pathname) ? window.location.pathname : '/';
+        const cleanPath = rawPath.replace(/\/+$/, '') || '/';
+        if (ROUTE_TO_TAB[cleanPath]) return ROUTE_TO_TAB[cleanPath];
+      } catch (e) {}
+      return null;
+    }
+
+    function switchTab(tabId, skipHistory) {
+      currentTab = tabId;
+      const tabs = ['totp', 'migration', 'qrgen', 'steam', 'vault', 'cli'];
+      for (let i = 0; i < tabs.length; i++) {
+        const t = tabs[i];
+        const sec = document.getElementById('view-' + t);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (sec) {
+          if (t === tabId) sec.classList.remove('hidden');
+          else sec.classList.add('hidden');
+        }
+        if (btn) {
+          btn.className = (t === tabId
+            ? 'tab-nav-btn px-2.5 py-1.5 rounded-lg font-semibold whitespace-nowrap transition bg-emerald-500 text-zinc-950'
+            : 'tab-nav-btn px-2.5 py-1.5 rounded-lg font-medium whitespace-nowrap transition text-zinc-400 hover:text-white');
+        }
+      }
+      syncRouteMeta(tabId, skipHistory);
+      if (tabId === 'qrgen') renderQrGenerator();
+      if (tabId === 'vault') refreshVaultStatusPreview();
+      if (tabId === 'cli') runLiveSecurityAudit();
+      if (tabId === 'steam') refreshSteamCode();
+      trackSiteEvent('tab_view', { tab: tabId });
+    }
+
+    const LANG_CYCLE = { en: 'zh', zh: 'ja', ja: 'en' };
+    const LANG_LABEL = { en: '🌐 中文 / 日本語', zh: '🌐 日本語 / EN', ja: '🌐 EN / 中文' };
+    const LANG_TAG = { en: 'en', zh: 'zh-CN', ja: 'ja' };
+
+    function toggleLanguage() {
+      currentLang = LANG_CYCLE[currentLang] || 'en';
+      try { localStorage.setItem('2fa_pub_lang_v1', currentLang); } catch (e) {}
+      applyLanguage();
+    }
+
+    // Resolution order: ?lang= URL param > saved user choice > browser & system locale > default English ('en')
+    function detectLang() {
+      try {
+        const p = (new URLSearchParams(window.location.search).get('lang') || '').toLowerCase();
+        if (p.indexOf('zh') === 0) return 'zh';
+        if (p.indexOf('ja') === 0) return 'ja';
+        if (p.indexOf('en') === 0) return 'en';
+      } catch (e) {}
+      try {
+        const saved = localStorage.getItem('2fa_pub_lang_v1');
+        if (saved === 'en' || saved === 'zh' || saved === 'ja') return saved;
+      } catch (e) {}
+      const rawList = [];
+      if (typeof navigator !== 'undefined') {
+        if (navigator.languages && navigator.languages.length) {
+          for (let i = 0; i < navigator.languages.length; i++) rawList.push(navigator.languages[i]);
+        }
+        if (navigator.language) rawList.push(navigator.language);
+      }
+      try {
+        const sysLocale = Intl.DateTimeFormat().resolvedOptions().locale;
+        if (sysLocale) rawList.push(sysLocale);
+      } catch (e) {}
+      for (let i = 0; i < rawList.length; i++) {
+        const l = String(rawList[i] || '').toLowerCase();
+        if (l.indexOf('zh') === 0) return 'zh';
+        if (l.indexOf('ja') === 0) return 'ja';
+        if (l.indexOf('en') === 0) return 'en';
+      }
+      return 'en';
+    }
+
+    function applyLanguage() {
+      const dict = I18N[currentLang] || I18N.en;
+      document.querySelectorAll('[data-i18n]').forEach(function(n) {
+        const key = n.getAttribute('data-i18n');
+        if (dict[key]) n.textContent = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function(n) {
+        const key = n.getAttribute('data-i18n-placeholder');
+        if (dict[key]) n.setAttribute('placeholder', dict[key]);
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(function(n) {
+        const key = n.getAttribute('data-i18n-title');
+        if (dict[key]) n.setAttribute('title', dict[key]);
+      });
+      document.querySelectorAll('[data-i18n-aria]').forEach(function(n) {
+        const key = n.getAttribute('data-i18n-aria');
+        if (dict[key]) n.setAttribute('aria-label', dict[key]);
+      });
+      document.documentElement.lang = LANG_TAG[currentLang] || 'en';
+      syncRouteMeta(currentTab, true);
+      const langBtn = document.getElementById('btnToggleLang');
+      if (langBtn) langBtn.textContent = LANG_LABEL[currentLang] || '🌐 中文 / 日本語';
+      // Re-render all JS-generated regions so dynamic strings follow the language
+      handleOmniInput();
+      renderBatchTable();
+      parseMigrationInput();
+      runLiveSecurityAudit();
+      refreshVaultStatusPreview();
+      refreshSteamCode();
+    }
+
+    window.addEventListener('DOMContentLoaded', async function() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+      injectAnalyticsAndAdsenseScripts();
+
+      if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+        navigator.serviceWorker.register('/sw.js').catch(function() {});
+      }
+
+      document.getElementById('omniInputTextarea').value = '';
+
+      // Restore auto-advance preference (after-copy next-row pointer)
+      try { autoAdvanceEnabled = localStorage.getItem('2fa_pub_auto_advance') === '1'; } catch (e) {}
+      const advToggle = document.getElementById('autoAdvanceToggle');
+      if (advToggle) advToggle.checked = autoAdvanceEnabled;
+
+      // Automatic system & browser language selection (defaulting to English 'en')
+      currentLang = detectLang();
+      const routedTab = resolveInitialTabFromPath();
+      if (routedTab) currentTab = routedTab;
+      applyLanguage();
+      if (routedTab && routedTab !== 'totp') {
+        switchTab(routedTab, true);
+      }
+      window.addEventListener('popstate', function() {
+        const target = resolveInitialTabFromPath();
+        if (target) switchTab(target, true);
+      });
+
+      checkUrlHashRoute();
+      window.addEventListener('hashchange', checkUrlHashRoute);
+
+      await handleOmniInput();
+      renderQrGenerator();
+      refreshSteamCode();
+      refreshVaultStatusPreview();
+      runLiveSecurityAudit();
+      trackSiteEvent('page_view', { entry: routedTab || 'home' });
+
+      setInterval(function() {
+        refreshAllCodes();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

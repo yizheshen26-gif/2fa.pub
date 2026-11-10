@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://2fa.pub/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/google-extractor</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/qr-generator</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/steam</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/vault</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/cli</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/google-authenticator-export</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/en/google-authenticator-export</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/ja/google-authenticator-export</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-export"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-export"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/google-authenticator-transfer-new-phone</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/en/google-authenticator-transfer-new-phone</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/google-authenticator-transfer-new-phone"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/google-authenticator-transfer-new-phone"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/lost-2fa-secret-recovery</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/en/lost-2fa-secret-recovery</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://2fa.pub/guides/ja/lost-2fa-secret-recovery</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://2fa.pub/guides/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://2fa.pub/guides/ja/lost-2fa-secret-recovery"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://2fa.pub/guides/en/lost-2fa-secret-recovery"/>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+</urlset>

@@ -1,0 +1,7 @@
+# Cloudflare Pages pre-rendered sub-route rewrites — serves dedicated SEO HTML per tool
+/google-extractor /google-extractor.html 200
+/qr-generator /qr-generator.html 200
+/steam /steam.html 200
+/vault /vault.html 200
+/cli /cli.html 200
+# Guides use Pages built-in clean URLs: /guides/foo automatically serves foo.html

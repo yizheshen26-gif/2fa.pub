@@ -1,0 +1,19 @@
+# Build artifacts (regenerate with: python obfuscate_build.py --zip)
+2fa-pub-deploy.zip
+2fa-pub-site-protected.zip
+index.prod.html
+google-extractor.html
+qr-generator.html
+steam.html
+vault.html
+cli.html
+_verify/
+
+# OS / editor noise
+Thumbs.db
+.DS_Store
+*.swp
+
+# Local tooling
+node_modules/
+__pycache__/
