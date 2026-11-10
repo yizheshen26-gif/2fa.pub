@@ -19,13 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Third-party components bundled under their own licenses:
-
-- Lucide icons (assets/vendor/lucide.min.js) — ISC License
-- jsQR (assets/vendor/jsQR.min.js) — Apache-2.0 License
-- qrcode-generator (assets/vendor/qrcode.min.js) — MIT License
-- Inter & JetBrains Mono fonts (assets/fonts/) — SIL Open Font License 1.1
-- Tailwind CSS (build-time dependency, assets/tailwind.css output) — MIT License

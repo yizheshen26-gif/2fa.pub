@@ -102,4 +102,4 @@ the entire point of the project.
 ## License
 
 [MIT](LICENSE). Bundled third-party components (lucide, jsQR, qrcode-generator,
-Inter/JetBrains Mono fonts) keep their own licenses — see the notes in `LICENSE`.
+Inter/JetBrains Mono fonts) keep their own licenses (ISC / Apache-2.0 / MIT / SIL OFL-1.1).

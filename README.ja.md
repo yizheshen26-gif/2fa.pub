@@ -95,5 +95,4 @@ Issue・PR を歓迎します——特に暗号コアへのセキュリティレ
 ## ライセンス
 
 [MIT](LICENSE)。同梱のサードパーティコンポーネント（lucide、jsQR、
-qrcode-generator、Inter／JetBrains Mono フォント）は各自のライセンスに従います——
-`LICENSE` 内の注記を参照してください。
+qrcode-generator、Inter／JetBrains Mono フォント）は各自のライセンス（ISC / Apache-2.0 / MIT / SIL OFL-1.1）に従います。

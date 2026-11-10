@@ -97,4 +97,4 @@ python obfuscate_build.py --zip
 ## 许可
 
 [MIT](LICENSE)。打包的第三方组件（lucide、jsQR、qrcode-generator、
-Inter/JetBrains Mono 字体）遵循各自的原许可——见 `LICENSE` 中的说明。
+Inter/JetBrains Mono 字体）遵循各自的原许可（ISC / Apache-2.0 / MIT / SIL OFL-1.1）。
